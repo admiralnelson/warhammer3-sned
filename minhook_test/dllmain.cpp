@@ -1,3 +1,6 @@
+//kris. b
+//hacks to enable DLL again
+
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 #include <windows.h>
@@ -16,7 +19,8 @@ extern "C" {
 #include "lobject.h"
 }
 
-//hacks to enable DLL again
+#define EXPORT extern "C" __declspec(dllexport)
+
 
 
 /* environment variables that hold the search path for packages */
@@ -206,6 +210,12 @@ uint64_t __fastcall hf_luaopen_package(lua_State* L)
 }
 
 
+EXPORT BOOL Test()
+{
+    #pragma EXPORT
+    printf("hellow");
+    return true;
+}
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
