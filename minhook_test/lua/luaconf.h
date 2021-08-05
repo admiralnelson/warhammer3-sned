@@ -489,7 +489,8 @@
 */
 
 #define LUA_NUMBER_DOUBLE
-#define LUA_NUMBER	double
+//changed! for compatibilty when passing numeric value from game script to DLL.
+#define LUA_NUMBER	float 
 
 /*
 @@ LUAI_UACNUMBER is the result of an 'usual argument conversion'

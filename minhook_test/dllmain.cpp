@@ -1,5 +1,23 @@
-//kris. b
 //hacks to enable DLL again
+/*
+    Copyright (C) 2021  admiralnelson aka kris b.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    email: admiralofinternetmeme[at]outlook[dot]com 
+    discord: z bb - tablet (bot easy)#1668
+*/
 
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
@@ -21,8 +39,6 @@ extern "C" {
 
 #define EXPORT extern "C" __declspec(dllexport)
 
-
-
 /* environment variables that hold the search path for packages */
 #define LUA_PATH	"LUA_PATH"
 #define LUA_CPATH	"LUA_CPATH"
@@ -43,6 +59,14 @@ extern "C" {
 /* error codes for ll_loadfunc */
 #define ERRLIB		1
 #define ERRFUNC		2
+
+const char* LicenseText = ""
+"Warhammer 2 SNED (Script Native Extension DLL) Runtime Copyright(C) 2021 admiralnelson\n"
+"This program comes with ABSOLUTELY NO WARRANTY;"
+"for details please read the supplied LICENSE.txt in the supplied archive\n"
+"This is free software, and you are welcome to redistribute it"
+"under certain conditions.\n";
+
 
 static void pusherror(lua_State* L) {
     int error = GetLastError();
@@ -230,10 +254,10 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         FILE* console_stream = nullptr;
 
         AllocConsole();
-        SetConsoleTitle(L"LOL");
+        SetConsoleTitle(L"Warhammer 2 SNED (Script Native Extension DLL) console");
         freopen_s(&console_stream, "conout$", "w", stdout);
 
-        std::cout << "Hello, world!" << std::endl;
+        std::cout << LicenseText << std::endl;
 
         if (MH_Initialize() != MH_OK)
         {

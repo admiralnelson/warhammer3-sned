@@ -1,0 +1,4 @@
+ask /g/ or /twg/ for logo
+seamless support with crippled `require` function
+sandbox or idiot mode, prevents unauthorised or unknown hash of DLL before it's being loaded maliciously
+debug parameter flag or some sort

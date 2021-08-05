@@ -1,0 +1,47 @@
+Build instruction:
+Clone the repo recursively
+Open the solution in Loader directory.
+You may need to adjust the proper include folder for release mode.
+
+Install insruction:
+1. Copy from output binaries into your warhammer2.exe directory.
+   - Loader.exe
+   - min_hook.dll (this will be changed soon in the next iteration)
+   - PDBs for the .exe and .dll, this will be required if you want to attach debugger when the game runs.
+
+2. Make sure in warhammer2.exe directory, you have the following files:
+    - steam_api64.dll
+    - steam_appid.txt (contains a single line that is Warhammer 2 steamapp id: 594570)
+   You can find both files in launcher directory. Otherwise the game won't launch and you get shitty electron launcher instead.
+
+These 2 steps will be automated (and idiot proof) in the future.
+
+Modders and devs:
+
+In lua script, to use Warhammer 2 SNED lua loader, use `require2(moduleName, luaEntryPoint)` where moduleName is your DLL filename (without .dll extension, and located in warhammer2.exe directory, can be placed in subdirectory) and luaEntryPoint is your lua entry point procedure (such as luaopen_libsneedio), example: require2("libsneedio", "luaopen_libsneedio");
+
+In the future we will make require2 function works seamlessly with the original `require` function like it used to.
+
+You can pass parameters in the Loader.exe and it will be passed to the game executeable. I recommend creating a simple batch file like this to launch your game. In fact this is how I run my game 99% of the time. I only use the launcher once or twice when I need to disable or change the mods order.
+
+my_epic_mods.bat
+```
+@echo off
+set MOD=used_mods.txt
+
+echo launching %MOD%
+if not exist %MOD% goto :fail
+Loader.exe %MOD%; -dx11
+echo exiting...
+if %ERRORLEVEL% GEQ 1 goto :fail
+exit
+:fail
+echo Fail to launch game
+pause
+exit
+
+```
+
+Compatibility with 3rd party launcher:
+Maybe? I never used 3rd party launcher in my life. I despise launcher.
+
