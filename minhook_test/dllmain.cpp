@@ -29,6 +29,7 @@
 #include <map>
 #include <iostream>
 #include <ctime>
+#include <vector>
 #include "MinHook.h"
 extern "C" {
 #include "lua.h"
@@ -62,9 +63,9 @@ extern "C" {
 
 const char* LicenseText = ""
 "Warhammer 2 SNED (Script Native Extension DLL) Runtime Copyright(C) 2021 admiralnelson\n"
-"This program comes with ABSOLUTELY NO WARRANTY;"
+"This program comes with ABSOLUTELY NO WARRANTY "
 "for details please read the supplied LICENSE.txt in the supplied archive\n"
-"This is free software, and you are welcome to redistribute it"
+"This is free software, and you are welcome to redistribute it\n"
 "under certain conditions.\n";
 
 
@@ -233,12 +234,56 @@ uint64_t __fastcall hf_luaopen_package(lua_State* L)
     return g_fp_luaopen_package(L);
 }
 
+uintptr_t FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets)
+{
+    uintptr_t addr = ptr;
+    for (unsigned int i = 0; i < offsets.size(); ++i)
+    {
+        addr = *(uintptr_t*)addr;
+        addr += offsets[i];
+    }
+    return addr;
+}
+
 
 EXPORT BOOL Test()
 {
     #pragma EXPORT
     printf("hellow");
     return true;
+}
+
+DWORD WINAPI TestMuteSystem(HMODULE handleModule)
+{
+    std::cout << "Thread has been started" << std::endl;
+    uintptr_t BaseAddress = (uintptr_t)GetModuleHandleA("Warhammer2.exe");
+    while (true)
+    {
+        if (GetAsyncKeyState(VK_RETURN))
+        {
+            uintptr_t PtrToMusicVolumeVal = FindDMAAddy(BaseAddress + 0x036F4938, std::vector<UINT>{0x47c});
+            int ActualVolume = *(int*)PtrToMusicVolumeVal;
+
+            std::cout << "pointer to volume is " << PtrToMusicVolumeVal << " current value is: " << ActualVolume << std::endl;
+        }
+        if (GetAsyncKeyState(VK_DELETE))
+        {
+            uintptr_t PtrToMusicVolumeVal = FindDMAAddy(BaseAddress + 0x036F4938, std::vector<UINT>{0x47c});
+            *(int*)PtrToMusicVolumeVal = 0;
+            int ActualVolume = *(int*)PtrToMusicVolumeVal;
+            std::cout << "set to mute!" << std::endl;
+            std::cout << "pointer to volume is " << PtrToMusicVolumeVal << " current value is: " << ActualVolume << std::endl;
+        }
+        if (GetAsyncKeyState(VK_INSERT))
+        {
+            uintptr_t PtrToMusicVolumeVal = FindDMAAddy(BaseAddress + 0x036F4938, std::vector<UINT>{0x47c});
+            *(int*)PtrToMusicVolumeVal = 100;
+            int ActualVolume = *(int*)PtrToMusicVolumeVal;
+            std::cout << "set to full!" << std::endl;
+            std::cout << "pointer to volume is " << PtrToMusicVolumeVal << " current value is: " << ActualVolume << std::endl;
+        }
+        Sleep(10);
+    }
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -294,6 +339,9 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             return 0;
         }
 
+        std::cout << "Everything seems normal." << std::endl;
+
+        CloseHandle(CreateRemoteThread(GetCurrentProcess(), NULL, 0, (LPTHREAD_START_ROUTINE)TestMuteSystem, NULL, NULL, NULL));
         break;
     }
     case DLL_THREAD_ATTACH:
