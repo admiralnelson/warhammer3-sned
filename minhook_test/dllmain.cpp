@@ -44,6 +44,9 @@ extern "C" {
 #include "lobject.h"
 }
 
+#include "lrdb/server.hpp"
+
+
 #define EXPORT extern "C" __declspec(dllexport)
 
 /* environment variables that hold the search path for packages */
@@ -295,6 +298,18 @@ static int StartDebugger(lua_State* L)
 }
 
 
+static int ExecuteLuaScriptDebug(lua_State* L)
+{
+    int listenPort = 21110;//listen tcp port for debugger interface
+    lrdb::server debug_server(listenPort);
+    debug_server.reset(L);
+    std::string luaScriptPath = luaL_checkstring(L, 1);
+    bool result = luaL_dofile(L, luaScriptPath.c_str());
+    debug_server.reset();
+    lua_pushboolean(L, result);
+    return 1;
+}
+
 typedef int(__fastcall* LUAOPEN_PACKAGE)(lua_State* L);
 
 static LUAOPEN_PACKAGE g_fp_luaopen_package = nullptr;
@@ -310,6 +325,7 @@ uint64_t __fastcall hf_luaopen_package(lua_State* L)
     lua_register(L, "PrintError", PrintError);
     lua_register(L, "PrintWarning", PrintWarning);
     lua_register(L, "StartDebugger", StartDebugger);
+    lua_register(L, "ExecuteLuaScriptDebug", ExecuteLuaScriptDebug);
     HWND currentWindow = GetActiveWindow();
     SetWindowText(currentWindow, L"Total Warhammer 2 Injected with SNED (Script Native Enchancer DLL)");
 
@@ -473,12 +489,17 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             return false;
         }
         void* luaopen_packageAddress = (void*)GetProcAddress(Warhammer2ExeAddress, "luaopen_package");
+        bool bAlternateMethod = false;
         if (!luaopen_packageAddress)
         {
-            printf("failed to acquire position of luaopen_package. Maybe function is not exported?");
-            return false;
+            printf("failed to acquire position of luaopen_package. Maybe function is not exported? trying another attempt....");
+            luaopen_packageAddress = (void*)(GetModuleHandleA("Warhammer2.exe") + 0x39d410);
+            if (luaopen_packageAddress)
+            {
+                printf("hopefully second entry point is not dud. ++ Finger Crossed ++");
+                bAlternateMethod = true;
+            }
         }
-
         
         if(MH_CreateHook(luaopen_packageAddress, &hf_luaopen_package, reinterpret_cast<void**>(&g_fp_luaopen_package)) != MH_OK)
         {
@@ -495,6 +516,10 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         }
 
         std::cout << "Everything seems normal." << std::endl;
+        if (bAlternateMethod)
+        {
+            std::cout << "Although alternate method was used..." << std::endl;
+        }
         break;
     }
     case DLL_THREAD_ATTACH:
