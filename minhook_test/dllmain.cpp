@@ -30,6 +30,12 @@
 #include <iostream>
 #include <ctime>
 #include <vector>
+#include <mutex>
+#include <deque>
+#include <thread>
+#include <iostream>
+#include <condition_variable>
+#include <future>
 #include "MinHook.h"
 extern "C" {
 #include "lua.h"
@@ -216,6 +222,79 @@ static int gctm(lua_State* L) {
 
 //end
 
+bool GetColour(short& ret) 
+{
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    if (!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info))
+        return false;
+    ret = info.wAttributes;
+    return true;
+}
+
+static int print2(lua_State* L)
+{
+    std::string s = std::string(luaL_checkstring(L, 1));
+    std::cout << s;
+
+    return 0;
+}
+
+static int PrintError(lua_State* L)
+{
+    std::string s = std::string(luaL_checkstring(L, 1));
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    short CurrentColour;
+    GetColour(CurrentColour);
+
+    SetConsoleTextAttribute(hConsole, BACKGROUND_RED | FOREGROUND_INTENSITY);
+
+    std::cout << s;
+
+    SetConsoleTextAttribute(hConsole, CurrentColour);
+
+    return 0;
+}
+
+static int PrintWarning(lua_State* L)
+{
+    std::string s = std::string(luaL_checkstring(L, 1));
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    short CurrentColour;
+    GetColour(CurrentColour);
+    SetConsoleTextAttribute(hConsole, BACKGROUND_GREEN | BACKGROUND_RED );
+
+    std::cout << s;
+    SetConsoleTextAttribute(hConsole, CurrentColour);
+
+    return 0;
+}
+
+typedef int(__fastcall* ENABLE_LUA_DEBUGGER)(void);
+
+static ENABLE_LUA_DEBUGGER EnableLuaDebugger = nullptr;
+static bool bDebuggerStarted = false;
+static int StartDebugger(lua_State* L)
+{
+    if (bDebuggerStarted)
+    {
+        std::cout << "debugger already started" << std::endl;
+        return 0;
+    }
+    if (EnableLuaDebugger == nullptr)
+    {
+        uintptr_t Base = (uintptr_t)GetModuleHandleA("Warhammer2.exe");
+        uintptr_t EnableLuaDebuggerPtr = Base + 0x93140;
+        EnableLuaDebugger = (ENABLE_LUA_DEBUGGER)EnableLuaDebuggerPtr;
+        std::cout << "EnableLuaDebuggerPtr is now " << EnableLuaDebuggerPtr << std::endl;
+    }
+    
+    std::cout << "EXECUTING DEBUGGER NOW! GAME MAY FREEZE!" << std::endl;
+    EnableLuaDebugger();
+    bDebuggerStarted = true;
+    return 0;
+}
+
+
 typedef int(__fastcall* LUAOPEN_PACKAGE)(lua_State* L);
 
 static LUAOPEN_PACKAGE g_fp_luaopen_package = nullptr;
@@ -227,7 +306,10 @@ uint64_t __fastcall hf_luaopen_package(lua_State* L)
     lua_pushcfunction(L, gctm);
     lua_setfield(L, -2, "__gc");
     lua_register(L, "require2", ll_loadlib);
-    
+    lua_register(L, "print2", print2);
+    lua_register(L, "PrintError", PrintError);
+    lua_register(L, "PrintWarning", PrintWarning);
+    lua_register(L, "StartDebugger", StartDebugger);
     HWND currentWindow = GetActiveWindow();
     SetWindowText(currentWindow, L"Total Warhammer 2 Injected with SNED (Script Native Enchancer DLL)");
 
@@ -253,37 +335,99 @@ EXPORT BOOL Test()
     return true;
 }
 
-DWORD WINAPI TestMuteSystem(HMODULE handleModule)
+bool RedirectConsoleIO()
 {
-    std::cout << "Thread has been started" << std::endl;
-    uintptr_t BaseAddress = (uintptr_t)GetModuleHandleA("Warhammer2.exe");
-    while (true)
-    {
-        if (GetAsyncKeyState(VK_RETURN))
-        {
-            uintptr_t PtrToMusicVolumeVal = FindDMAAddy(BaseAddress + 0x036F4938, std::vector<UINT>{0x47c});
-            int ActualVolume = *(int*)PtrToMusicVolumeVal;
+    bool result = true;
 
-            std::cout << "pointer to volume is " << PtrToMusicVolumeVal << " current value is: " << ActualVolume << std::endl;
-        }
-        if (GetAsyncKeyState(VK_DELETE))
-        {
-            uintptr_t PtrToMusicVolumeVal = FindDMAAddy(BaseAddress + 0x036F4938, std::vector<UINT>{0x47c});
-            *(int*)PtrToMusicVolumeVal = 0;
-            int ActualVolume = *(int*)PtrToMusicVolumeVal;
-            std::cout << "set to mute!" << std::endl;
-            std::cout << "pointer to volume is " << PtrToMusicVolumeVal << " current value is: " << ActualVolume << std::endl;
-        }
-        if (GetAsyncKeyState(VK_INSERT))
-        {
-            uintptr_t PtrToMusicVolumeVal = FindDMAAddy(BaseAddress + 0x036F4938, std::vector<UINT>{0x47c});
-            *(int*)PtrToMusicVolumeVal = 100;
-            int ActualVolume = *(int*)PtrToMusicVolumeVal;
-            std::cout << "set to full!" << std::endl;
-            std::cout << "pointer to volume is " << PtrToMusicVolumeVal << " current value is: " << ActualVolume << std::endl;
-        }
-        Sleep(10);
+
+    FILE* fp;
+
+    // Redirect STDIN if the console has an input handle
+    if (GetStdHandle(STD_INPUT_HANDLE) != INVALID_HANDLE_VALUE)
+        if (freopen_s(&fp, "CONIN$", "r", stdin) != 0)
+            result = false;
+        else
+            setvbuf(stdin, NULL, _IONBF, 0);
+
+    // Redirect STDOUT if the console has an output handle
+    if (GetStdHandle(STD_OUTPUT_HANDLE) != INVALID_HANDLE_VALUE)
+        if (freopen_s(&fp, "CONOUT$", "w", stdout) != 0)
+            result = false;
+        else
+            setvbuf(stdout, NULL, _IONBF, 0);
+
+    // Redirect STDERR if the console has an error handle
+    if (GetStdHandle(STD_ERROR_HANDLE) != INVALID_HANDLE_VALUE)
+        if (freopen_s(&fp, "CONOUT$", "w", stderr) != 0)
+            result = false;
+        else
+            setvbuf(stderr, NULL, _IONBF, 0);
+
+    // Make C++ standard streams point to console as well.
+    std::ios::sync_with_stdio(true);
+
+    return result;
+}
+
+bool ReleaseConsole()
+{
+    bool result = true;
+    FILE* fp;
+
+    // Just to be safe, redirect standard IO to NUL before releasing.
+
+    // Redirect STDIN to NUL
+    if (freopen_s(&fp, "NUL:", "r", stdin) != 0)
+        result = false;
+    else
+        setvbuf(stdin, NULL, _IONBF, 0);
+
+    // Redirect STDOUT to NUL
+    if (freopen_s(&fp, "NUL:", "w", stdout) != 0)
+        result = false;
+    else
+        setvbuf(stdout, NULL, _IONBF, 0);
+
+    // Redirect STDERR to NUL
+    if (freopen_s(&fp, "NUL:", "w", stderr) != 0)
+        result = false;
+    else
+        setvbuf(stderr, NULL, _IONBF, 0);
+
+    // Detach from console
+    if (!FreeConsole())
+        result = false;
+
+    return result;
+}
+
+bool CreateNewConsole()
+{
+    bool result = false;
+
+    // Attempt to create new console
+    if (AllocConsole())
+    {
+        result = RedirectConsoleIO();
     }
+
+    return result;
+}
+
+bool AttachParentConsole()
+{
+    bool result = false;
+
+    // Release any current console and redirect IO to NUL
+    ReleaseConsole();
+
+    // Attempt to attach to parent process's console
+    if (AttachConsole(ATTACH_PARENT_PROCESS))
+    {
+        result = RedirectConsoleIO();
+    }
+
+    return result;
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -296,11 +440,22 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_PROCESS_ATTACH:
     {
 
-        FILE* console_stream = nullptr;
+        /*FILE* console_stream = nullptr;
 
         AllocConsole();
         SetConsoleTitle(L"Warhammer 2 SNED (Script Native Extension DLL) console");
-        freopen_s(&console_stream, "conout$", "w", stdout);
+        freopen_s(&console_stream, "conout$", "w", stdout);*/
+
+        bool bSpawnConsole = std::getenv("WARHAMMER_2_SNED_INLINE_CONSOLE") != nullptr;
+        if (bSpawnConsole)
+        {
+            CreateNewConsole();
+            SetConsoleTitle(L"Warhammer 2 SNED (Script Native Extension DLL) console");
+        }
+        else
+        {
+            AttachParentConsole();
+        }
 
         std::cout << LicenseText << std::endl;
 
@@ -340,8 +495,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         }
 
         std::cout << "Everything seems normal." << std::endl;
-
-        CloseHandle(CreateRemoteThread(GetCurrentProcess(), NULL, 0, (LPTHREAD_START_ROUTINE)TestMuteSystem, NULL, NULL, NULL));
         break;
     }
     case DLL_THREAD_ATTACH:
