@@ -77,6 +77,9 @@ const char* LicenseText = ""
 "This is free software, and you are welcome to redistribute it\n"
 "under certain conditions.\n";
 
+//forward decl
+static int StopDebugger(lua_State* L);
+
 
 static void pusherror(lua_State* L) {
     int error = GetLastError();
@@ -220,6 +223,10 @@ static int gctm(lua_State* L) {
     void** lib = (void**)luaL_checkudata(L, 1, "_LOADLIB");
     if (*lib) ll_unloadlib(*lib);
     *lib = NULL;  /* mark library as closed */
+
+    //close the debugger too if it's still on
+    StopDebugger(L);
+
     return 0;
 }
 
@@ -237,7 +244,7 @@ bool GetColour(short& ret)
 static int print2(lua_State* L)
 {
     std::string s = std::string(luaL_checkstring(L, 1));
-    std::cout << s;
+    std::cout << s << std::endl;
 
     return 0;
 }
@@ -272,40 +279,35 @@ static int PrintWarning(lua_State* L)
     return 0;
 }
 
-typedef int(__fastcall* ENABLE_LUA_DEBUGGER)(void);
-
-static ENABLE_LUA_DEBUGGER EnableLuaDebugger = nullptr;
-static bool bDebuggerStarted = false;
+static lrdb::server *ServerInstance = nullptr;
 static int StartDebugger(lua_State* L)
 {
-    if (bDebuggerStarted)
+    if (ServerInstance == nullptr)
     {
-        std::cout << "debugger already started" << std::endl;
-        return 0;
+        std::cout << "=======Debugger started, game will freeze!=======" << std::endl;
+        ServerInstance = new lrdb::server(21110);
+        ServerInstance->reset(L);
     }
-    if (EnableLuaDebugger == nullptr)
-    {
-        uintptr_t Base = (uintptr_t)GetModuleHandleA("Warhammer2.exe");
-        uintptr_t EnableLuaDebuggerPtr = Base + 0x93140;
-        EnableLuaDebugger = (ENABLE_LUA_DEBUGGER)EnableLuaDebuggerPtr;
-        std::cout << "EnableLuaDebuggerPtr is now " << EnableLuaDebuggerPtr << std::endl;
-    }
-    
-    std::cout << "EXECUTING DEBUGGER NOW! GAME MAY FREEZE!" << std::endl;
-    EnableLuaDebugger();
-    bDebuggerStarted = true;
     return 0;
 }
 
+static int StopDebugger(lua_State* L)
+{
+    if (ServerInstance != nullptr)
+    {
+        ServerInstance->exit();
+        delete ServerInstance;
+        ServerInstance = nullptr;
+        std::cout << "=======Debugger stopped=======" << std::endl;
+    }
+    return 0;
+}
 
 static int ExecuteLuaScriptDebug(lua_State* L)
 {
-    int listenPort = 21110;//listen tcp port for debugger interface
-    lrdb::server debug_server(listenPort);
-    debug_server.reset(L);
+    StartDebugger(L);
     std::string luaScriptPath = luaL_checkstring(L, 1);
     bool result = luaL_dofile(L, luaScriptPath.c_str());
-    debug_server.reset();
     lua_pushboolean(L, result);
     return 1;
 }
@@ -325,6 +327,7 @@ uint64_t __fastcall hf_luaopen_package(lua_State* L)
     lua_register(L, "PrintError", PrintError);
     lua_register(L, "PrintWarning", PrintWarning);
     lua_register(L, "StartDebugger", StartDebugger);
+    lua_register(L, "StopDebugger", StopDebugger);
     lua_register(L, "ExecuteLuaScriptDebug", ExecuteLuaScriptDebug);
     HWND currentWindow = GetActiveWindow();
     SetWindowText(currentWindow, L"Total Warhammer 2 Injected with SNED (Script Native Enchancer DLL)");

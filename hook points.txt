@@ -1,0 +1,15 @@
+base 140000000
+luaopen_package:
+14039d410
+relative = 39d410
+signature: e9 be 3b c5 ff 48 89 6c 24 10 48 89 74 24 18 48 89 7c 24 20 41 56 48 41 ec
+
+lua_gettop:
+140383A50
+relative = 383A50
+signature: 48 8b 41 10 48 2b 41 18 48 c1 f8 04 c3
+
+get_mode?
+140C210C0
+relative = C210C0
+signature: 83 3d 95 87 d5 02 00 74 0d 8b 05 05 76 a7 02 3d

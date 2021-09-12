@@ -1,0 +1,16 @@
+ include/lrdb/basic_server.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/lrdb/basic_server.hpp b/include/lrdb/basic_server.hpp
+index 8d338ab..602f56c 100644
+--- a/include/lrdb/basic_server.hpp
++++ b/include/lrdb/basic_server.hpp
+@@ -95,7 +95,7 @@ class basic_server {
+ 
+     json::object lua;
+     lua["version"] = json::value(LUA_VERSION);
+-    lua["release"] = json::value(LUA_RELEASE);
++    lua["release"] = json::value("none");
+     lua["copyright"] = json::value(LUA_COPYRIGHT);
+ 
+     param["lua"] = json::value(lua);
