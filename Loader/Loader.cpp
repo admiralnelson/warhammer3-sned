@@ -27,7 +27,7 @@
 #include "Detours.h"
 
 const wchar_t* LicenseText =  L""
-L"Warhammer 2 SNED (Script Native Extension DLL) Loader Copyright(C) 2021 admiralnelson\n"
+L"Warhammer 3 SNED (Script Native Extension DLL) Loader Copyright(C) 2022 admiralnelson\n"
 L"This program comes with ABSOLUTELY NO WARRANTY;"
 L"for details please read the supplied LICENSE.txt in the supplied archive\n"
 L"This is free software, and you are welcome to redistribute it"
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 	}
 	std::wcout << L"argument passed: " << argument << L"\n\n";
 
-	argument = L"Warhammer2.exe " + argument;
+	argument = L"Warhammer3.exe " + argument;
 
 	std::wcout << L"argument that will be passed to the game: " << argument << L"\n\n";
 
@@ -67,11 +67,11 @@ int main(int argc, char* argv[])
 	si.dwFlags = STARTF_USESHOWWINDOW;
 	si.wShowWindow = SW_SHOW;
 
-	if (!DetourCreateProcessWithDllEx(L"Warhammer2.exe",
+	if (!DetourCreateProcessWithDllEx(L"Warhammer3.exe",
 		(LPWSTR)argument.data(), NULL, NULL, TRUE,
 		CREATE_DEFAULT_ERROR_MODE,// | CREATE_SUSPENDED,
 		NULL, NULL, &si, &pi,
-		"minhook_test.dll", NULL))
+		"libsnedloader.dll", NULL))
 	{
 		std::wcout << L"failed to inject\n";
 		MessageBox(0, L"failed", 0, 0);

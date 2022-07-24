@@ -44,7 +44,7 @@ extern "C" {
 #include "lobject.h"
 }
 
-#include "lrdb/server.hpp"
+//#include "lrdb/server.hpp"
 
 
 #define EXPORT extern "C" __declspec(dllexport)
@@ -279,27 +279,30 @@ static int PrintWarning(lua_State* L)
     return 0;
 }
 
-static lrdb::server *ServerInstance = nullptr;
+//static lrdb::server *ServerInstance = nullptr;
+
 static int StartDebugger(lua_State* L)
 {
-    if (ServerInstance == nullptr)
+    MessageBoxA(NULL, "Interactive LRDB debugger is not implemented yet", "", MB_ICONEXCLAMATION | MB_OK);
+    /*if (ServerInstance == nullptr)
     {
         std::cout << "=======Debugger started, game will freeze!=======" << std::endl;
         ServerInstance = new lrdb::server(21110);
         ServerInstance->reset(L);
-    }
+    }*/
     return 0;
 }
 
 static int StopDebugger(lua_State* L)
 {
-    if (ServerInstance != nullptr)
+    MessageBoxA(NULL, "Interactive LRDB debugger is not implemented yet", "", MB_ICONEXCLAMATION | MB_OK);
+    /*if (ServerInstance != nullptr)
     {
         ServerInstance->exit();
         delete ServerInstance;
         ServerInstance = nullptr;
         std::cout << "=======Debugger stopped=======" << std::endl;
-    }
+    }*/
     return 0;
 }
 
@@ -465,11 +468,11 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         SetConsoleTitle(L"Warhammer 2 SNED (Script Native Extension DLL) console");
         freopen_s(&console_stream, "conout$", "w", stdout);*/
 
-        bool bSpawnConsole = std::getenv("WARHAMMER_2_SNED_INLINE_CONSOLE") != nullptr;
+        bool bSpawnConsole = std::getenv("WARHAMMER_3_SNED_INLINE_CONSOLE") != nullptr;
         if (bSpawnConsole)
         {
             CreateNewConsole();
-            SetConsoleTitle(L"Warhammer 2 SNED (Script Native Extension DLL) console");
+            SetConsoleTitle(L"Warhammer 3 SNED (Script Native Extension DLL) console");
         }
         else
         {
@@ -485,18 +488,18 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             return 0;
         }
 
-        HMODULE Warhammer2ExeAddress = GetModuleHandleA("Warhammer2.exe");
-        if (!Warhammer2ExeAddress)
+        HMODULE Warhammer3ExeAddress = GetModuleHandleA("Warhammer2.exe");
+        if (!Warhammer3ExeAddress)
         {
             printf("failed to acquire Warhammer2 base");
             return false;
         }
-        void* luaopen_packageAddress = (void*)GetProcAddress(Warhammer2ExeAddress, "luaopen_package");
+        void* luaopen_packageAddress = (void*)GetProcAddress(Warhammer3ExeAddress, "luaopen_package");
         bool bAlternateMethod = false;
         if (!luaopen_packageAddress)
         {
             printf("failed to acquire position of luaopen_package. Maybe function is not exported? trying another attempt....");
-            luaopen_packageAddress = (void*)(GetModuleHandleA("Warhammer2.exe") + 0x39d410);
+            luaopen_packageAddress = (void*)(GetModuleHandleA("Warhammer3.exe") + 0x39d410);
             if (luaopen_packageAddress)
             {
                 printf("hopefully second entry point is not dud. ++ Finger Crossed ++");
