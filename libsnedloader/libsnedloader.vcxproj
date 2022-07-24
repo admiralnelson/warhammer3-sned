@@ -176,6 +176,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\external\minhook_ProjectFiles\minhook.vcxproj">
+      <Project>{5e77815c-9724-3881-8e07-668bd89c00c2}</Project>
+    </ProjectReference>
     <ProjectReference Include="lua\lua.vcxproj">
       <Project>{9e5c90e9-9409-48c0-9bdc-74fa3ca71ffd}</Project>
     </ProjectReference>
