@@ -47,6 +47,8 @@ int main(int argc, char* argv[])
 {
     std::wcout << LicenseText << L"\n";
 
+	system("pause");
+
 	std::wstring argument;
 	for (int i = 1; i < argc; i++)
 	{
@@ -80,6 +82,22 @@ int main(int argc, char* argv[])
 	{
 		std::wcout << L"inject ok\n";
 	}
+
+	//if (!CreateProcess((LPWSTR)L"Warhammer3.exe",   // No module name (use command line)
+	//	(LPWSTR)L"",        // Command line
+	//	NULL,           // Process handle not inheritable
+	//	NULL,           // Thread handle not inheritable
+	//	FALSE,          // Set handle inheritance to FALSE
+	//	0,              // No creation flags
+	//	NULL,           // Use parent's environment block
+	//	NULL,           // Use parent's starting directory 
+	//	&si,            // Pointer to STARTUPINFO structure
+	//	&pi)           // Pointer to PROCESS_INFORMATION structure
+	//	)
+	//{
+	//	printf("CreateProcess failed (%d).\n", GetLastError());
+	//	return EXIT_FAILURE;
+	//}
 
 	ResumeThread(pi.hThread);
 

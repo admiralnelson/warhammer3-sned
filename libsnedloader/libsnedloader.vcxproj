@@ -162,12 +162,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Debugger.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Helper.h" />
+    <ClInclude Include="LuaLoader.h" />
     <ClInclude Include="MinHook.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Helper.cpp" />
+    <ClCompile Include="LuaLoader.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

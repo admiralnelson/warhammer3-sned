@@ -7,6 +7,32 @@
 #ifndef PCH_H
 #define PCH_H
 
+#include <windows.h>
+extern "C" {
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+#include "lobject.h"
+}
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string>
+#include <sstream>
+#include <map>
+#include <iostream>
+#include <ctime>
+#include <vector>
+#include <mutex>
+#include <deque>
+#include <thread>
+#include <iostream>
+#include <condition_variable>
+#include <future>
+#include "MinHook.h"
+#include "LuaLoader.h"
+
+
 // add headers that you want to pre-compile here
 #include "framework.h"
 
