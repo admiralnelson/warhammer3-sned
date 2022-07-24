@@ -177,6 +177,62 @@ static int gctm(lua_State* L) {
     return 0;
 }
 
+static int LuaPrint(lua_State* L)
+{
+    int nargs = lua_gettop(L);
+
+    for (int i = 1; i <= nargs; i++)
+    {
+        if (lua_isstring(L, i))
+        {
+            /* Pop the next arg using lua_tostring(L, i) and do your print */
+            std::cout << lua_tostring(L, i);
+        }
+        else
+        {
+            if (lua_isnumber(L, i))
+            {
+                std::cout << lua_tonumber(L, i);
+            }
+            if (lua_isboolean(L, i))
+            {
+                std::cout << lua_toboolean(L, i) ? "true" : "false";
+            }
+            if (lua_isfunction(L, i))
+            {
+                std::cout << "<lua function located at: " << std::hex << lua_topointer(L, i) << ">";
+            }
+            if (lua_isuserdata(L, i))
+            {
+                std::cout << "<lua userdata located at: " << std::hex << lua_touserdata(L, i) << ">";
+            }
+            if (lua_istable(L, i))
+            {
+                std::cout << "<lua table located at: " << std::hex << lua_topointer(L, i) << ">";
+            }
+            if (lua_iscfunction(L, i))
+            {
+                std::cout << "<lua native function located at: " << std::hex << lua_topointer(L, i) << ">";
+            }
+            if (lua_islightuserdata(L, i))
+            {
+                std::cout << "<lua lightuserdata located at: " << lua_topointer(L, i) << ">";
+            }
+            if (lua_isthread(L, i))
+            {
+                std::cout << "<lua thread located at: " << lua_topointer(L, i) << ">";
+            }
+            if (lua_isnoneornil(L, i))
+            {
+                std::cout << "nil";
+            }
+        }
+        std::cout << "  ";
+    }
+    std::cout << std::endl;
+    return 0;
+}
+
 static uint64_t __fastcall hf_luaopen_package(lua_State* L)
 {
     //MessageBoxA(nullptr, "Lua has been patched sire.", "*Finger crossed*", MB_OK);
@@ -191,6 +247,7 @@ static uint64_t __fastcall hf_luaopen_package(lua_State* L)
     lua_register(L, "StartDebugger", StartDebugger);
     lua_register(L, "StopDebugger", StopDebugger);
     lua_register(L, "ExecuteLuaScriptDebug", ExecuteLuaScriptDebug);
+    lua_register(L, "print", LuaPrint);
     HWND currentWindow = GetActiveWindow();
     SetWindowText(currentWindow, L"Total Warhammer 2 Injected with SNED (Script Native Enchancer DLL)");
 
