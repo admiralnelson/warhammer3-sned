@@ -1,11 +1,21 @@
- include/lrdb/basic_server.hpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/lrdb/basic_server.hpp          |  7 ++++++-
+ include/lrdb/command_stream/socket.hpp |  1 +
+ include/lrdb/debugger.hpp              | 29 ++++++++++++++++++++++-------
+ 3 files changed, 29 insertions(+), 8 deletions(-)
 
 diff --git a/include/lrdb/basic_server.hpp b/include/lrdb/basic_server.hpp
-index 8d338ab..602f56c 100644
+index 8d338ab..c0106a4 100644
 --- a/include/lrdb/basic_server.hpp
 +++ b/include/lrdb/basic_server.hpp
-@@ -95,7 +95,7 @@ class basic_server {
+@@ -4,6 +4,7 @@
+ #include <memory>
+ #include <utility>
+ #include <vector>
++#include <algorithm>
+ 
+ #include "debugger.hpp"
+ #include "message.hpp"
+@@ -95,7 +96,7 @@ class basic_server {
  
      json::object lua;
      lua["version"] = json::value(LUA_VERSION);
@@ -14,3 +24,90 @@ index 8d338ab..602f56c 100644
      lua["copyright"] = json::value(LUA_COPYRIGHT);
  
      param["lua"] = json::value(lua);
+@@ -166,6 +167,9 @@ class basic_server {
+         hit_condition =
+             param.get<json::object>().at("hit_condition").get<std::string>();
+       }
++
++      std::cout << "added breakpoint " << source << " line nr " << line << std::endl;
++
+       debugger_.add_breakpoint(source, line, condition, hit_condition);
+ 
+     } else {
+@@ -190,6 +194,7 @@ class basic_server {
+         int line = static_cast<int>(
+             param.get<json::object>().at("line").get<double>());
+         debugger_.clear_breakpoints(source, line);
++        std::cout << "removed breakpoint " << source << " line nr " << line << std::endl;
+       }
+     }
+ 
+diff --git a/include/lrdb/command_stream/socket.hpp b/include/lrdb/command_stream/socket.hpp
+index a501af9..cc62c97 100644
+--- a/include/lrdb/command_stream/socket.hpp
++++ b/include/lrdb/command_stream/socket.hpp
+@@ -108,6 +108,7 @@ class command_stream_socket {
+                                std::string command;
+                                std::getline(is, command);
+                                if (on_data) {
++                                 std::cout << "received debug command " << command << std::endl;
+                                  on_data(command);
+                                }
+                                start_receive_commands();
+diff --git a/include/lrdb/debugger.hpp b/include/lrdb/debugger.hpp
+index e9e69fc..531c663 100644
+--- a/include/lrdb/debugger.hpp
++++ b/include/lrdb/debugger.hpp
+@@ -6,6 +6,8 @@
+ #include <functional>
+ #include <string>
+ #include <vector>
++#include <regex>
++
+ 
+ #include <cmath>
+ 
+@@ -820,7 +822,10 @@ class debugger {
+       path2++;
+     }
+   }
+-
++  void normalise_source_string(std::string& source) {
++      std::replace(source.begin(), source.end(), '\\', '/');
++      std::transform(source.begin(), source.end(), source.begin(), [](unsigned char c) { return std::tolower(c); });
++  }
+   breakpoint_info* search_breakpoints(debug_info& debuginfo) {
+     if (line_breakpoints_.empty()) {
+       return 0;
+@@ -829,15 +834,25 @@ class debugger {
+     for (line_breakpoint_type::iterator it = line_breakpoints_.begin();
+          it != line_breakpoints_.end(); ++it) {
+       if (currentline == it->line) {
+-        const char* source = debuginfo.source();
+-        if (!source) {
+-          continue;
++        const char* sourcePtr = debuginfo.source();
++        if (!sourcePtr) {
++            continue;
+         }
+         // remove front @
+-        if (source[0] == '@') {
+-          source++;
++        if (sourcePtr[0] == '@') {
++            sourcePtr++;
+         }
+-        if (is_file_path_match(it->file.c_str(), source)) {
++        std::string source = sourcePtr;
++        std::string file = it->file;
++        normalise_source_string(source);
++        normalise_source_string(file);
++        std::cout << "VERBOSE: executing " << source << " line nr " << currentline << std::endl;
++        std::regex reg("(script\\/.*)");
++        std::smatch match;
++        if (!std::regex_search(file, match, reg)) continue;
++        file = match[1];
++        if (is_file_path_match(file.c_str(), source.c_str())) {
++          std::cout << "breakpoint hit " << file << " line nr "<< currentline << std::endl;
+           return &(*it);
+         }
+       }

@@ -1,0 +1,815 @@
+<116.7s>                #### Adding Taurox Rampage Listeners ####
+<116.7s>                #### Adding Beastmen progression Listeners ####
+<116.7s>                #### Adding Volkmar Elector Units Listeners ####
+<116.7s>        ####################
+<116.7s>        Endgame scenarios: Loading the following scenarios from /script/campaign/main_warhammer/endgame/:
+<116.7s>                endgame_grudge_too_far loaded successfully
+<116.7s>                endgame_pyramid_of_nagash loaded successfully
+<116.7s>                endgame_vampires_rise loaded successfully
+<116.7s>                endgame_waaagh loaded successfully
+<116.7s>                endgame_wild_hunt loaded successfully
+<116.7s>        5 total scenarios loaded successfully
+<116.7s>        ####################
+received debug command {"method":"continue","jsonrpc":"2.0","id":0}
+received debug command {"method":"clear_breakpoints","jsonrpc":"2.0","id":1,"params":{"file":"bret_lord_pack_scripts\\script\\campaign\\mod\\BretLordPacks.lua"}}
+received debug command {"method":"add_breakpoint","jsonrpc":"2.0","id":2,"params":{"line":30,"file":"bret_lord_pack_scripts\\script\\campaign\\mod\\BretLordPacks.lua"}}
+received debug command {"method":"add_breakpoint","jsonrpc":"2.0","id":3,"params":{"line":31,"file":"bret_lord_pack_scripts\\script\\campaign\\mod\\BretLordPacks.lua"}}
+received debug command {"method":"clear_breakpoints","jsonrpc":"2.0","id":4,"params":{"file":"bret_lord_pack_scripts\\campaign\\mod\\BretLordPacks.ts"}}
+received debug command {"method":"add_breakpoint","jsonrpc":"2.0","id":5,"params":{"line":32,"file":"bret_lord_pack_scripts\\campaign\\mod\\BretLordPacks.ts"}}
+<156.7s>        BretLordPack: admiralnelson_bret_lord_massif_agent_key
+<156.7s>        BretLordPack: admiralnelson_bret_lord_massif_sword_shield_agent_key
+<156.7s>        BretLordPack: admiralnelson_bret_lord_2handed_agent_key
+BretLordPack: hello i'm compiled from typescript!
+BretLordPack: BretLordPacks runtime version 1
+<157.4s>   ********************************************************************************
+<157.4s>
+<199.2s>
+<199.2s>   ********************************************************************************
+<199.2s>   main_warhammer event has occurred:: SavingGame
+<199.2s>        output is shown on the savegame console spool - unique counter for this output is [2]
+<199.5s>   ********************************************************************************
+<199.5s>
+<199.6s>   ********************************************************************************
+<199.6s>   ********************************************************************************
+<199.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [82]
+<199.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [867]
+<199.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [935]
+<199.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [982]
+<199.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1054]
+<199.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1056]
+<202.5s>    & Removing effect bundle [wh3_main_ritual_kho_gg_1] from military force with cqi [2]
+<202.5s>    & Removing effect bundle [wh3_main_ritual_kho_gg_1_upgraded] from military force with cqi [2]
+<202.5s>   create_force_with_full_diplomatic_discovery() called:
+<202.5s>        faction_key: wh3_main_kho_khorne_qb1
+<202.5s>        unit_list: wh3_main_kho_inf_bloodletters_0,wh3_main_kho_inf_bloodletters_0,wh3_main_kho_inf_bloodletters_0
+<202.5s>        region_key: wh3_main_combi_region_zlatlan
+<202.5s>        x: 716
+<202.5s>        y: 357
+<202.5s>        id: 3
+<202.5s>        exclude_named_characters: true
+<204.4s>
+<204.4s>   **** PendingBattle event received, starting battle sequence - attacking character is [Skaldach] with cqi [1331] of faction [wh3_main_kho_khorne_qb1], defending character is [Skarbrand the Exiled] with cqi [2] of faction [wh3_main_kho_exiles_of_khorne] at position [714, 356]
+<204.4s>    & Applying effect bundle [wh_main_bundle_military_upkeep_free_force] to military force with cqi [1132] for [0] turns
+<204.7s>   **** BattleCompleted event received, the defender won
+<204.7s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<204.7s>
+<204.7s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [2]
+<204.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [3]
+<204.9s>
+<204.9s>   **** PendingBattle event received, starting battle sequence - attacking character is [N'Kari] with cqi [6] of faction [wh3_main_sla_seducers_of_slaanesh], defending character is [Hordahn] with cqi [1283] of faction [wh2_main_hef_chrace] at position [295, 619], the battle is being fought over a settlement [settlement:wh3_main_combi_region_tor_achare] in region [wh3_main_combi_region_tor_achare]
+<205.0s>   **** BattleCompleted event received, the battle was not fought
+<205.0s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<205.0s>
+<205.0s>
+<205.0s>   **** PendingBattle event received, starting battle sequence - attacking character is [N'Kari] with cqi [6] of faction [wh3_main_sla_seducers_of_slaanesh], defending character is [Bel-Harthur] with cqi [596] of faction [wh2_main_hef_chrace] at position [299, 640], the battle is being fought over a settlement [settlement:wh3_main_combi_region_elisia] in region [wh3_main_combi_region_elisia]
+<205.1s>   **** BattleCompleted event received, the attacker won
+<205.1s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<205.1s>
+<205.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [4]
+<205.3s>
+<205.3s>   **** PendingBattle event received, starting battle sequence - attacking character is [Kairos Fateweaver] with cqi [8] of faction [wh3_main_tze_oracles_of_tzeentch], defending character is [Mantressa] with cqi [1286] of faction [wh2_main_hef_fortress_of_dawn] at position [582, 59]
+<205.5s>   **** BattleCompleted event received, the attacker won
+<205.5s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<205.5s>
+<205.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [5]
+<205.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [983]
+<205.7s>
+<205.7s>   **** PendingBattle event received, starting battle sequence - attacking character is [Kostaltyn] with cqi [11] of faction [wh3_main_ksl_the_great_orthodoxy], defending character is [Gavrill Koshka] with cqi [1034] of faction [wh3_main_ksl_ungol_kindred] at position [613, 792], the battle is being fought over a settlement [settlement:wh3_main_combi_region_castle_alexandronov] in region [wh3_main_combi_region_castle_alexandronov]
+<206.0s>   **** BattleCompleted event received, the attacker won
+<206.0s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<206.0s>
+<206.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1058]
+<206.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [937]
+<206.4s>   Teleporting [character_cqi:1142] to [1030, 499]
+<206.4s>
+<206.4s>   **** PendingBattle event received, starting battle sequence - attacking character is [Miao Ying, the Storm Dragon] with cqi [19] of faction [wh3_main_cth_the_northern_provinces], defending character is [Yutang Yong] with cqi [585] of faction [wh3_main_cth_rebel_lords_of_nan_yang] at position [1172, 609], the battle is being fought over a settlement [settlement:wh3_main_combi_region_weng_chang] in region [wh3_main_combi_region_weng_chang]
+<206.6s>   **** BattleCompleted event received, the attacker won
+<206.6s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<206.6s>
+<206.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [985]
+<206.7s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [12]
+<206.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1060]
+<215.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1061]
+<215.2s>    & Removing effect bundle [wh2_dlc10_power_of_nature] from region with key [wh3_main_combi_region_gaean_vale]
+<215.2s>    & Applying effect bundle [wh2_dlc10_power_of_nature] to region with key [wh3_main_combi_region_gaean_vale] for [10] turns
+<215.2s>    & Removing effect bundle [wh2_dlc10_bundle_alarielle_corruption_0] from faction [wh2_main_hef_avelorn]
+<215.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [939]
+<215.4s>   wh2_dlc15_eltharion_mist: clearing Mists of Yvresse regional effect bundles
+<215.4s>   wh2_dlc15_eltharion_mist: updating Mists of Yvresse regional effect bundles
+<215.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1063]
+<215.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [19]
+<215.7s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [20]
+<215.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1065]
+<216.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [23]
+<216.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [24]
+<216.1s>
+<216.1s>   **** PendingBattle event received, starting battle sequence - attacking character is [Gor-Rok] with cqi [45] of faction [wh2_main_lzd_itza], defending character is [Cragtongue] with cqi [504] of faction [wh3_dlc20_nur_pallid_nurslings] at position [186, 219], the battle is being fought over a settlement [settlement:wh3_main_combi_region_quetza] in region [wh3_main_combi_region_quetza]
+<216.2s>   **** BattleCompleted event received, the attacker won
+<216.2s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<216.2s>
+<216.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1066]
+<216.6s>
+<216.6s>   **** PendingBattle event received, starting battle sequence - attacking character is [Morgula] with cqi [1095] of faction [wh2_main_def_har_ganeth], defending character is [Sporctacus] with cqi [329] of faction [wh3_main_grn_da_cage_breakaz] at position [223, 842]
+<216.8s>   **** BattleCompleted event received, the attacker won
+<216.8s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<216.8s>
+<216.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [943]
+<216.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [29]
+<216.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [30]
+<217.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [31]
+<217.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [32]
+<217.1s>
+<217.1s>   **** PendingBattle event received, starting battle sequence - attacking character is [Rakarth] with cqi [58] of faction [wh2_twa03_def_rakarth], defending character is [Kiori] with cqi [1289] of faction [wh2_main_lzd_sentinels_of_xeti] at position [37, 282], the battle is being fought over a settlement [settlement:wh3_main_combi_region_golden_ziggurat] in region [wh3_main_combi_region_golden_ziggurat]
+<217.2s>   **** BattleCompleted event received, the attacker won
+<217.2s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<217.2s>
+<217.2s>   ######## eight_peaks_check() ########
+<217.2s>        Faction: wh_main_grn_necksnappers
+<217.2s>        BELEGAR OWNS KARAK EIGHT PEAKS : false
+<217.2s>        SKARSNIK OWNS KARAK EIGHT PEAKS : false
+<217.2s>        QUEEK OWNS KARAK EIGHT PEAKS : false
+<217.2s>        Removing effects...
+<217.2s>    & Removing effect bundle [wh_dlc06_belegar_karak_owned_false] from faction [wh_main_dwf_karak_izor]
+<217.2s>    & Removing effect bundle [wh_dlc06_belegar_karak_owned_true] from faction [wh_main_dwf_karak_izor]
+<217.2s>    & Removing effect bundle [wh_dlc06_skarsnik_karak_owned_false] from faction [wh_main_grn_crooked_moon]
+<217.2s>    & Removing effect bundle [wh_dlc06_skarsnik_karak_owned_true] from faction [wh_main_grn_crooked_moon]
+<217.3s>    & Removing effect bundle [wh2_main_queek_karak_owned_false] from faction [wh2_main_skv_clan_mors]
+<217.3s>    & Removing effect bundle [wh2_main_queek_karak_owned_true] from faction [wh2_main_skv_clan_mors]
+<217.3s>        Applying effects...
+<217.3s>        wh_dlc06_belegar_karak_owned_false
+<217.3s>    & Applying effect bundle [wh_dlc06_belegar_karak_owned_false] to faction [wh_main_dwf_karak_izor] for [0] turns
+<217.3s>        wh2_main_queek_karak_owned_false
+<217.3s>    & Applying effect bundle [wh2_main_queek_karak_owned_false] to faction [wh2_main_skv_clan_mors] for [0] turns
+<217.3s>        wh_dlc06_skarsnik_karak_owned_false
+<217.3s>    & Applying effect bundle [wh_dlc06_skarsnik_karak_owned_false] to faction [wh_main_grn_crooked_moon] for [0] turns
+<217.3s>   #############################
+<217.3s>   UnderEmpireBuildingExpansion - wh3_main_combi_region_karak_eight_peaks
+<217.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1067]
+<217.7s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [946]
+<217.7s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [998]
+<217.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [36]
+<217.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [999]
+<217.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1068]
+<218.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1069]
+<218.1s>
+<218.1s>   **** PendingBattle event received, starting battle sequence - attacking character is [Deathmaster Snikch] with cqi [70] of faction [wh2_main_skv_clan_eshin], defending character is [Sour] with cqi [333] of faction [wh3_main_grn_dimned_sun] at position [1208, 563]
+<218.2s>   **** BattleCompleted event received, the attacker won
+<218.2s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<218.2s>
+<218.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [39]
+<218.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1002]
+<218.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1071]
+<218.7s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [44]
+<218.8s>
+<218.8s>   **** PendingBattle event received, starting battle sequence - attacking character is [Count Noctilus] with cqi [81] of faction [wh2_dlc11_cst_noctilus], defending character is [Lorna] with cqi [611] of faction [wh2_main_hef_tiranoc] at position [187, 546], the battle is being fought over a settlement [settlement:wh3_main_combi_region_avethir] in region [wh3_main_combi_region_avethir]
+<218.9s>   **** BattleCompleted event received, the attacker won
+<218.9s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<218.9s>
+<219.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1005]
+<219.2s>
+<219.2s>   **** PendingBattle event received, starting battle sequence - attacking character is [Aranessa Saltspite] with cqi [85] of faction [wh2_dlc11_cst_pirates_of_sartosa], defending character is [Filippo Belladonna] with cqi [888] of faction [wh_main_teb_tilea] at position [497, 456], the battle is being fought over a settlement [settlement:wh3_main_combi_region_miragliano] in region [wh3_main_combi_region_miragliano]
+<219.3s>   **** BattleCompleted event received, the attacker won
+<219.3s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<219.3s>
+<219.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [48]
+<219.7s>
+<219.7s>   **** PendingBattle event received, starting battle sequence - attacking character is [Balthasar Gelt] with cqi [88] of faction [wh2_dlc13_emp_golden_order], defending character is [Elbog] with cqi [1064] of faction [wh_main_grn_black_venom] at position [620, 565], the battle is being fought over a settlement [settlement:wh3_main_combi_region_steingart] in region [wh3_main_combi_region_steingart]
+<219.8s>   **** BattleCompleted event received, the attacker won
+<219.8s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<219.8s>
+<219.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1007]
+<220.0s>
+<220.0s>   **** PendingBattle event received, starting battle sequence - attacking character is [Volkmar the Grim] with cqi [90] of faction [wh3_main_emp_cult_of_sigmar], defending character is [Yanhakhat] with cqi [709] of faction [wh2_dlc09_tmb_dune_kingdoms] at position [560, 229], the battle is being fought over a settlement [settlement:wh3_main_combi_region_plain_of_tuskers] in region [wh3_main_combi_region_plain_of_tuskers]
+<220.1s>   **** BattleCompleted event received, the attacker won
+<220.1s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<220.1s>
+<220.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1008]
+<220.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [880]
+<220.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [52]
+<220.4s>   ######## eight_peaks_check() ########
+<220.4s>        Faction: wh_main_grn_necksnappers
+<220.4s>        BELEGAR OWNS KARAK EIGHT PEAKS : false
+<220.4s>        SKARSNIK OWNS KARAK EIGHT PEAKS : false
+<220.4s>        QUEEK OWNS KARAK EIGHT PEAKS : false
+<220.4s>        Removing effects...
+<220.4s>    & Removing effect bundle [wh_dlc06_belegar_karak_owned_false] from faction [wh_main_dwf_karak_izor]
+<220.4s>    & Removing effect bundle [wh_dlc06_belegar_karak_owned_true] from faction [wh_main_dwf_karak_izor]
+<220.4s>    & Removing effect bundle [wh_dlc06_skarsnik_karak_owned_false] from faction [wh_main_grn_crooked_moon]
+<220.4s>    & Removing effect bundle [wh_dlc06_skarsnik_karak_owned_true] from faction [wh_main_grn_crooked_moon]
+<220.4s>    & Removing effect bundle [wh2_main_queek_karak_owned_false] from faction [wh2_main_skv_clan_mors]
+<220.4s>    & Removing effect bundle [wh2_main_queek_karak_owned_true] from faction [wh2_main_skv_clan_mors]
+<220.4s>        Applying effects...
+<220.4s>        wh_dlc06_belegar_karak_owned_false
+<220.4s>    & Applying effect bundle [wh_dlc06_belegar_karak_owned_false] to faction [wh_main_dwf_karak_izor] for [0] turns
+<220.4s>        wh2_main_queek_karak_owned_false
+<220.4s>    & Applying effect bundle [wh2_main_queek_karak_owned_false] to faction [wh2_main_skv_clan_mors] for [0] turns
+<220.4s>        wh_dlc06_skarsnik_karak_owned_false
+<220.4s>    & Applying effect bundle [wh_dlc06_skarsnik_karak_owned_false] to faction [wh_main_grn_crooked_moon] for [0] turns
+<220.4s>   #############################
+<220.7s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1010]
+<220.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1011]
+<220.9s>
+<220.9s>   **** PendingBattle event received, starting battle sequence - attacking character is [Grimgor Ironhide] with cqi [106] of faction [wh_main_grn_greenskins], defending character is ['Ardra Fullateef] with cqi [355] of faction [wh3_main_grn_tusked_sunz] at position [965, 709]
+<221.0s>   **** BattleCompleted event received, the attacker won
+<221.0s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<221.0s>
+<221.2s>   Restricting confederation between [faction:wh_main_grn_greenskins] and [subculture:wh_main_sc_grn_greenskins]
+<221.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1012]
+<221.2s>   ######## eight_peaks_check() ########
+<221.2s>        Faction: wh_main_grn_necksnappers
+<221.2s>        BELEGAR OWNS KARAK EIGHT PEAKS : false
+<221.2s>        SKARSNIK OWNS KARAK EIGHT PEAKS : false
+<221.2s>        QUEEK OWNS KARAK EIGHT PEAKS : false
+<221.2s>        Removing effects...
+<221.2s>    & Removing effect bundle [wh_dlc06_belegar_karak_owned_false] from faction [wh_main_dwf_karak_izor]
+<221.2s>    & Removing effect bundle [wh_dlc06_belegar_karak_owned_true] from faction [wh_main_dwf_karak_izor]
+<221.2s>    & Removing effect bundle [wh_dlc06_skarsnik_karak_owned_false] from faction [wh_main_grn_crooked_moon]
+<221.2s>    & Removing effect bundle [wh_dlc06_skarsnik_karak_owned_true] from faction [wh_main_grn_crooked_moon]
+<221.2s>    & Removing effect bundle [wh2_main_queek_karak_owned_false] from faction [wh2_main_skv_clan_mors]
+<221.2s>    & Removing effect bundle [wh2_main_queek_karak_owned_true] from faction [wh2_main_skv_clan_mors]
+<221.2s>        Applying effects...
+<221.2s>        wh_dlc06_belegar_karak_owned_false
+<221.2s>    & Applying effect bundle [wh_dlc06_belegar_karak_owned_false] to faction [wh_main_dwf_karak_izor] for [0] turns
+<221.2s>        wh2_main_queek_karak_owned_false
+<221.2s>    & Applying effect bundle [wh2_main_queek_karak_owned_false] to faction [wh2_main_skv_clan_mors] for [0] turns
+<221.2s>        wh_dlc06_skarsnik_karak_owned_false
+<221.2s>    & Applying effect bundle [wh_dlc06_skarsnik_karak_owned_false] to faction [wh_main_grn_crooked_moon] for [0] turns
+<221.2s>   #############################
+<221.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1015]
+<221.7s>
+<221.7s>   **** PendingBattle event received, starting battle sequence - attacking character is [Mannfred von Carstein] with cqi [116] of faction [wh_main_vmp_vampire_counts], defending character is [Intes] with cqi [1058] of faction [wh2_dlc09_tmb_dune_kingdoms] at position [598, 246], the battle is being fought over a settlement [settlement:wh3_main_combi_region_bhagar] in region [wh3_main_combi_region_bhagar]
+<221.9s>   **** BattleCompleted event received, the attacker won
+<221.9s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<221.9s>
+<222.3s>
+<222.3s>   **** PendingBattle event received, starting battle sequence - attacking character is [Vlad von Carstein] with cqi [122] of faction [wh_main_vmp_schwartzhafen], defending character is [Milland Bachman] with cqi [871] of faction [wh_main_vmp_rival_sylvanian_vamps] at position [686, 628], the battle is being fought over a settlement [settlement:wh3_main_combi_region_castle_templehof] in region [wh3_main_combi_region_castle_templehof]
+<222.4s>   **** BattleCompleted event received, the attacker won
+<222.4s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<222.4s>
+<222.5s>
+<222.5s>   **** PendingBattle event received, starting battle sequence - attacking character is [Vlad von Carstein] with cqi [122] of faction [wh_main_vmp_schwartzhafen], defending character is [Reynald Ghorst] with cqi [1220] of faction [wh_main_vmp_rival_sylvanian_vamps] at position [718, 650]
+<222.7s>   **** BattleCompleted event received, the attacker won
+<222.7s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<222.7s>
+<222.7s>
+<222.7s>   **** PendingBattle event received, starting battle sequence - attacking character is [Vlad von Carstein] with cqi [122] of faction [wh_main_vmp_schwartzhafen], defending character is [Zelig van Kruger] with cqi [363] of faction [wh_main_vmp_rival_sylvanian_vamps] at position [720, 648], the battle is being fought over a settlement [settlement:wh3_main_combi_region_waldenhof] in region [wh3_main_combi_region_waldenhof]
+<222.8s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_castle_templehof]
+<222.8s>   **** BattleCompleted event received, the attacker won
+<222.8s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<222.8s>
+<222.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1017]
+<223.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [66]
+<223.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [67]
+<223.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [964]
+<223.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [68]
+<223.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [69]
+<223.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [70]
+<223.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [72]
+<224.0s>
+<224.0s>   **** PendingBattle event received, starting battle sequence - attacking character is [Be'lakor] with cqi [139] of faction [wh3_main_chs_shadow_legion], defending character is [Taloghast] with cqi [1270] of faction [wh3_dlc20_tze_the_sightless] at position [355, 763], the battle is being fought over a settlement [settlement:wh3_main_combi_region_citadel_of_lead] in region [wh3_main_combi_region_citadel_of_lead]
+<224.2s>    & Applying effect bundle [wh_main_bundle_region_chaos_corruption] to region with key [wh3_main_combi_region_citadel_of_lead] for [5] turns
+<224.2s>   **** BattleCompleted event received, the attacker won
+<224.2s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<224.2s>
+<224.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [73]
+<224.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [74]
+<224.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [75]
+<224.6s>
+<224.6s>   **** PendingBattle event received, starting battle sequence - attacking character is [Morghur the Shadowgave] with cqi [145] of faction [wh_dlc05_bst_morghur_herd], defending character is [Wolfric Warner] with cqi [883] of faction [wh_main_teb_estalia] at position [381, 426], the battle is being fought over a settlement [settlement:wh3_main_combi_region_nuja] in region [wh3_main_combi_region_nuja]
+<224.8s>   **** BattleCompleted event received, the attacker won
+<224.8s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<224.8s>
+<224.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [76]
+<224.9s>   ++ triggering incident from db wh2_dlc17_bst_taurox_rampage_over_loss for faction wh2_dlc17_bst_taurox, fire_immediately: true
+<224.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [77]
+<225.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [79]
+<225.5s>   BretLordPack: current bret faction wh_main_brt_carcassonne
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+<225.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1018]
+<225.6s>   BretLordPack: current bret faction wh_main_brt_bordeleaux
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+<225.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1019]
+<225.8s>    & Removing effect bundle [wh2_dlc14_bundle_desert_supplies] from the force of character with cqi [163]
+<225.8s>   & Applying effect bundle [wh2_dlc14_bundle_desert_supplies] to the force of character with cqi [163] for [5] turns
+<225.8s>    & Removing effect bundle [wh2_dlc14_bundle_desert_supplies] from the force of character with cqi [481]
+<225.8s>   & Applying effect bundle [wh2_dlc14_bundle_desert_supplies] to the force of character with cqi [481] for [5] turns
+<225.9s>   BretLordPack: current bret faction wh2_dlc14_brt_chevaliers_de_lyonesse
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+<226.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1020]
+<226.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1021]
+<227.7s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [893]
+<228.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1087]
+<228.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1088]
+<228.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [112]
+<228.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1089]
+<228.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [114]
+<228.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [115]
+<228.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [116]
+<228.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [117]
+<228.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [118]
+<228.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [119]
+<228.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [120]
+<228.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [121]
+<228.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1091]
+<228.8s>
+<228.8s>   **** PendingBattle event received, starting battle sequence - attacking character is [Gofg] with cqi [997] of faction [wh3_main_ogr_rock_skulls], defending character is [Gozbag] with cqi [1177] of faction [wh2_dlc15_grn_bonerattlaz] at position [771, 678]
+<229.0s>   **** BattleCompleted event received, the defender won
+<229.0s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<229.0s>
+<229.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1093]
+<229.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1094]
+<229.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [130]
+<229.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [131]
+<229.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [132]
+<229.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [133]
+<229.5s>   Teleporting [character_cqi:1125] to [946, 478]
+<229.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [970]
+<229.7s>   Teleporting [character_cqi:1037] to [952, 634]
+<229.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [899]
+<229.8s>   Teleporting [character_cqi:1038] to [950, 633]
+<229.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [140]
+<229.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [900]
+<232.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [165]
+<232.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [905]
+<232.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [172]
+<233.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [175]
+<233.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1108]
+<233.5s>   UnderEmpireBuildingExpansion - wh3_main_combi_region_ash_ridge_mountains
+<233.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [910]
+<234.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [195]
+<234.9s>   UnderEmpireBuildingExpansion - wh3_main_combi_region_karaz_a_karak
+<234.9s>   UnderEmpireBuildingExpansion - wh3_main_combi_region_grom_peak
+<235.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1110]
+<236.1s>
+<236.1s>   **** PendingBattle event received, starting battle sequence - attacking character is [Boris Todbringer] with cqi [297] of faction [wh_main_emp_middenland], defending character is [Greebitz] with cqi [351] of faction [wh_dlc03_grn_black_pit] at position [537, 677]
+<236.3s>   **** BattleCompleted event received, the defender won
+<236.3s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<236.3s>
+<237.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1033]
+<237.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1116]
+<238.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [924]
+<239.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [247]
+<239.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [253]
+<240.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [256]
+<240.2s>
+<240.2s>   **** PendingBattle event received, starting battle sequence - attacking character is [Spite Backbiter] with cqi [343] of faction [wh_main_grn_scabby_eye], defending character is [Trer] with cqi [699] of faction [wh3_main_skv_clan_verms] at position [728, 491], the battle is being fought over a settlement [settlement:wh3_main_combi_region_iron_rock] in region [wh3_main_combi_region_iron_rock]
+<240.3s>    & Removing effect bundle [wh3_main_bundle_corruption_skaven_high_reduction] from region with key [wh3_main_combi_region_black_crag]
+<240.4s>   **** BattleCompleted event received, the attacker won
+<240.4s>   **** Battle sequence completed, triggering ScriptEventBattleSequenceCompleted.
+<240.4s>
+<240.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [259]
+<240.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1046]
+<241.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [263]
+<241.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [266]
+<241.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [273]
+<241.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [274]
+<242.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [276]
+<242.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [927]
+<242.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1048]
+<242.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [280]
+<242.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1123]
+<243.0s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [980]
+<243.1s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [288]
+<243.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [289]
+<243.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [290]
+<243.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [291]
+<243.8s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [292]
+<244.1s>   BretLordPack: current bret faction wh_main_brt_artois
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+<244.3s>   BretLordPack: current bret faction wh_main_brt_bastonne
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+<244.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1124]
+<244.4s>   BretLordPack: current bret faction wh3_main_brt_aquitaine
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+<244.5s>   BretLordPack: current bret faction wh2_main_brt_knights_of_origo
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+<244.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1051]
+<244.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1052]
+<244.8s>   BretLordPack: current bret faction wh2_main_brt_thegans_crusaders
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+<245.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [311]
+<245.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1128]
+<245.9s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [1129]
+<246.2s>    & Applying effect bundle [wh_main_bundle_force_siege_equipment_dwf] to military force with cqi [863] for [0] turns
+<246.2s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [863]
+<246.2s>    & Applying effect bundle [wh_main_bundle_force_siege_equipment_grn] to military force with cqi [860] for [0] turns
+<246.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [860]
+<246.3s>    & Applying effect bundle [wh_main_bundle_force_siege_equipment_emp] to military force with cqi [861] for [0] turns
+<246.3s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [861]
+<246.4s>    & Applying effect bundle [wh2_main_bundle_force_siege_equipment_skv] to military force with cqi [864] for [0] turns
+<246.4s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [864]
+<246.4s>    & Applying effect bundle [wh2_dlc11_bundle_force_siege_equipment_cst] to military force with cqi [866] for [0] turns
+<246.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [866]
+<246.5s>    & Applying effect bundle [wh_dlc08_bundle_force_siege_equipment_nor] to military force with cqi [862] for [0] turns
+<246.5s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [862]
+<246.6s>    & Applying effect bundle [wh2_main_bundle_force_siege_equipment_def] to military force with cqi [865] for [0] turns
+<246.6s>    & Removing effect bundle [wh3_main_bundle_force_crackdown_corruption] from military force with cqi [865]
+<247.0s>   * create_storm_for_region() called, creating storm type [land_storm] in region [wh3_main_combi_region_great_desert_of_araby]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_skaven_high_reduction] from region with key [wh3_main_combi_region_altar_of_the_horned_rat]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_slaanesh_high_reduction] from region with key [wh3_main_combi_region_white_tower_of_hoeth]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_the_galleons_graveyard]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_castle_templehof]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_nurgle_high_reduction] from region with key [wh3_main_combi_region_the_lost_palace]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_skaven_high_reduction] from region with key [wh3_main_combi_region_skavenblight]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_skaven_high_reduction] from region with key [wh3_main_combi_region_temple_of_skulls]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_slaanesh_high_reduction] from region with key [wh3_main_combi_region_the_writhing_fortress]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_tzeentch_high_reduction] from region with key [wh3_main_combi_region_black_rock]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_tzeentch_high_reduction] from region with key [wh3_main_combi_region_daemons_gate]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_slaanesh_high_reduction] from region with key [wh3_main_combi_region_the_twisted_towers]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_castle_drakenhof]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_lyonesse]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_dagraks_end]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_the_awakening]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_nonchang]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_khorne_high_reduction] from region with key [wh3_main_combi_region_the_howling_citadel]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_slaanesh_high_reduction] from region with key [wh3_main_combi_region_okkams_forever_maze]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_doomkeep]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_skaven_high_reduction] from region with key [wh3_main_combi_region_oyxl]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_sartosa]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_skeggi]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_nurgle_high_reduction] from region with key [wh3_main_combi_region_zanbaijin]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_slaanesh_high_reduction] from region with key [wh3_main_combi_region_ancient_city_of_quintex]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_monolith_of_borkill_the_bloody_handed]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_nurgle_high_reduction] from region with key [wh3_main_combi_region_the_forest_of_decay]
+<247.3s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_beichai]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_the_haunted_forest]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_altar_of_the_crimson_harvest]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_fort_jakova]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_nurgle_high_reduction] from region with key [wh3_main_combi_region_dread_rock]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_bloodwind_keep]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_tzeentch_high_reduction] from region with key [wh3_main_combi_region_konquata]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_skaven_high_reduction] from region with key [wh3_main_combi_region_hell_pit]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_tzeentch_high_reduction] from region with key [wh3_main_combi_region_the_crystal_spires]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_the_challenge_stone]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_skaven_high_reduction] from region with key [wh3_main_combi_region_black_crag]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_the_monolith_of_katam]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_vampiric_high_reduction] from region with key [wh3_main_combi_region_silver_pinnacle]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_khorne_high_reduction] from region with key [wh3_main_combi_region_the_silvered_tower_of_sorcerers]
+<247.4s>    & Removing effect bundle [wh3_main_bundle_corruption_chaos_high_reduction] from region with key [wh3_main_combi_region_the_forbidden_citadel]
+<247.4s>    & Removing effect bundle [wh3_main_ivory_road_end_node_value] from region with key [wh3_main_combi_region_erengrad]
+<247.4s>    & Removing effect bundle [wh3_main_ivory_road_end_node_value] from region with key [wh3_main_combi_region_karaz_a_karak]
+<247.4s>    & Removing effect bundle [wh3_main_ivory_road_end_node_value] from region with key [wh3_main_combi_region_frozen_landing]
+<247.4s>    & Removing effect bundle [wh3_main_ivory_road_end_node_value] from region with key [wh3_main_combi_region_myrmidens]
+<247.4s>    & Removing effect bundle [wh3_main_ivory_road_end_node_value] from region with key [wh3_main_combi_region_marienburg]
+<247.4s>    & Removing effect bundle [wh3_main_ivory_road_end_node_value] from region with key [wh3_main_combi_region_altdorf]
+<247.4s>    & Removing effect bundle [wh3_main_ivory_road_end_node_value] from region with key [wh3_main_combi_region_castle_drakenhof]
+<247.5s>
+<247.5s>   ********************************************************************************
+<247.5s>   * Human faction wh_main_brt_bretonnia is starting turn 6
+<247.5s>   * triggering event ScriptEventHumanFactionTurnStart
+<247.5s>   ********************************************************************************
+<247.5s>         & Removing effect bundle [wh_dlc07_bundle_peasant_penalty_0] from faction [wh_main_brt_bretonnia]
+<247.5s>         & Applying effect bundle [wh_dlc07_bundle_peasant_penalty_0] to faction [wh_main_brt_bretonnia] for [0] turns
+<247.5s>
+<247.5s>   ********************************************************************************
+<247.5s>   * Local player faction wh_main_brt_bretonnia is starting turn 6
+<247.5s>   * triggering event ScriptEventPlayerFactionTurnStart
+<247.5s>   ********************************************************************************
+<247.5s>        BretLordPack: current bret faction wh_main_brt_bretonnia
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_massif_sword_shield_agent_key lord to be added into pool
+BretLordPack: stack traceback:
+        [string "script\campaign\mod\bretlordpacks.lua"]:30: in function 'SpawnLordToPool'
+        [string "script\campaign\mod\bretlordpacks.lua"]:74: in function 'callbackFn'
+        [string "script\_lib\lualib_bundle.lua"]:81: in function '__TS__ArrayForEach'
+        [string "script\campaign\mod\bretlordpacks.lua"]:71: in function <[string "script\campaign\mod\bretlordpacks.lua"]:64>
+        [C]: in function 'pcall'
+        [string "script\_lib\mod\pj_error_wrapping.lua"]:58: in function 'callback'
+        [string "script\_lib\lib_core.lua"]:1930: in function <[string "script\_lib\lib_core.lua"]:1930>
+        [C]: in function 'xpcall'
+        [string "script\_lib\lib_core.lua"]:1930: in function 'event_protected_callback'
+        [string "script\_lib\lib_core.lua"]:1991: in function 'event_callback'
+        [string "script\_lib\lib_core.lua"]:2051: in function <[string "script\_lib\lib_core.lua"]:2051>
+BretLordPack: I picked admiralnelson_bret_lord_2handed_agent_key lord to be added into pool
+***ROUND TIME for AI was 48.0
+<248.0s>         *
+<248.0s>         * DilemmaIssuedEvent received for faction wh_main_brt_bretonnia, key is wh_main_all_the_gods_are_angry
+<248.0s>         *

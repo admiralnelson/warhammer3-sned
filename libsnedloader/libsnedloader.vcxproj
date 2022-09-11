@@ -123,11 +123,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;MINHOOKTEST_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;ASIO_HAS_STD_ADDRESSOF;DLL_EXPORT=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WIN32_LEAN_AND_MEAN;MINHOOKTEST_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;ASIO_HAS_STD_ADDRESSOF;DLL_EXPORT=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\external\lrdb\third_party\picojson;$(SolutionDir)..\external\lrdb\third_party\asio\asio\include;$(SolutionDir)..\external\lrdb\include;$(SolutionDir)..\$(ProjectName)\lua;$(SolutionDir)..\external\warhammer3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\external\lrdb\third_party\picojson;$(SolutionDir)..\external\lrdb\third_party\asio\asio\include;$(SolutionDir)..\external\lrdb\include;$(SolutionDir)..\external\warhammer3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

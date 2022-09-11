@@ -1,29 +1,32 @@
 #include "pch.h"
+#include "lrdb/server.hpp"
 
-//static lrdb::server *ServerInstance = nullptr;
+const int listenPort = 21110;
+static lrdb::server* pDebugger = nullptr;
+
+bool IsDebuggerOn()
+{
+    return pDebugger != nullptr;
+}
 
 int StartDebugger(lua_State* L)
 {
-    MessageBoxA(NULL, "Interactive LRDB debugger is not implemented yet", "", MB_ICONEXCLAMATION | MB_OK);
-    /*if (ServerInstance == nullptr)
+    if (pDebugger != nullptr) return 0;
+    int res = MessageBoxA(NULL, "Starting debugger, press ok to continue milord!", "", MB_ICONEXCLAMATION | MB_YESNO);
+    if (res == IDYES)
     {
-        std::cout << "=======Debugger started, game will freeze!=======" << std::endl;
-        ServerInstance = new lrdb::server(21110);
-        ServerInstance->reset(L);
-    }*/
+        pDebugger = new lrdb::server(listenPort);
+        pDebugger->reset(L);
+    }
     return 0;
 }
 
 int StopDebugger(lua_State* L)
 {
-    MessageBoxA(NULL, "Interactive LRDB debugger is not implemented yet", "", MB_ICONEXCLAMATION | MB_OK);
-    /*if (ServerInstance != nullptr)
-    {
-        ServerInstance->exit();
-        delete ServerInstance;
-        ServerInstance = nullptr;
-        std::cout << "=======Debugger stopped=======" << std::endl;
-    }*/
+    if (pDebugger == nullptr) return 0;
+    pDebugger->exit();
+    delete pDebugger;
+    pDebugger = nullptr;
     return 0;
 }
 

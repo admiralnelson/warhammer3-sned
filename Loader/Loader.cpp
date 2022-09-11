@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
 	if (!DetourCreateProcessWithDllEx(L"Warhammer3.exe",
 		(LPWSTR)argument.data(), NULL, NULL, TRUE,
-		CREATE_DEFAULT_ERROR_MODE,// | CREATE_SUSPENDED,
+		CREATE_NEW_PROCESS_GROUP,// | CREATE_SUSPENDED,
 		NULL, NULL, &si, &pi,
 		"libsnedloader.dll", NULL))
 	{

@@ -116,7 +116,7 @@ static const char* findfile(lua_State* L, const char* name,
         if (readable(filename))  /* does file exist and is readable? */
             return filename;  /* return that file name */
         lua_pop(L, 2);  /* remove path template and file name */
-        luaO_pushfstring(L, "\n\tno file " LUA_QS, filename);
+        lua_pushfstring(L, "\n\tno file " LUA_QS, filename);
         lua_concat(L, 2);
     }
     return NULL;  /* not found */
@@ -249,7 +249,7 @@ static uint64_t __fastcall hf_luaopen_package(lua_State* L)
     lua_register(L, "ExecuteLuaScriptDebug", ExecuteLuaScriptDebug);
     lua_register(L, "print", LuaPrint);
     HWND currentWindow = GetActiveWindow();
-    SetWindowText(currentWindow, L"Total Warhammer 2 Injected with SNED (Script Native Enchancer DLL)");
+    SetWindowText(currentWindow, L"Total Warhammer 3 Injected with SNED (Script Native Enchancer DLL)");
 
     return g_fp_luaopen_package(L);
 }

@@ -1,0 +1,1 @@
+{"method":"add_breakpoint","jsonrpc":"2.0","id":1,"params":{"line":30,"file":"bret_lord_pack_scripts\\script\\campaign\\mod\\BretLordPacks.lua"}}

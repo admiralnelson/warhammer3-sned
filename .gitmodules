@@ -4,3 +4,6 @@
 [submodule "external/minhook"]
 	path = external/minhook
 	url = https://github.com/TsudaKageyu/minhook.git
+[submodule "external/lrdb"]
+	path = external/lrdb
+	url = https://github.com/satoren/LRDB.git
