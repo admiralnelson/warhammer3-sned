@@ -1,5 +1,5 @@
 /*
-** $Id: lauxlib.h,v 1.87 2005/12/29 15:32:11 roberto Exp $
+** $Id: lauxlib.h,v 1.86 2005/10/21 13:47:42 roberto Exp roberto $
 ** Auxiliary functions for building Lua libraries
 ** See Copyright Notice in lua.h
 */
@@ -31,9 +31,6 @@ LUALIB_API void (luaL_setn) (lua_State *L, int t, int n);
 /* extra error code for `luaL_load' */
 #define LUA_ERRFILE     (LUA_ERRERR+1)
 
-
-#define luaL_getTableArrSize(L,i)		((int)lua_arrsize(L, i))
-#define luaL_getTableHashSize(L,i)		((int)lua_hashsize(L, i))
 
 typedef struct luaL_Reg {
   const char *name;

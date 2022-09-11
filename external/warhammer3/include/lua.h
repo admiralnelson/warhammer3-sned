@@ -1,5 +1,5 @@
 /*
-** $Id: lua.h,v 1.216 2006/01/10 12:50:13 roberto Exp $
+** $Id: lua.h,v 1.215 2005/12/27 17:09:50 roberto Exp roberto $
 ** Lua - An Extensible Extension Language
 ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
 ** See Copyright Notice at the end of this file
@@ -147,8 +147,6 @@ LUA_API lua_Integer     (lua_tointeger) (lua_State *L, int idx);
 LUA_API int             (lua_toboolean) (lua_State *L, int idx);
 LUA_API const char     *(lua_tolstring) (lua_State *L, int idx, size_t *len);
 LUA_API size_t          (lua_objlen) (lua_State *L, int idx);
-LUA_API size_t			(lua_arrsize) (lua_State *L, int idx);
-LUA_API size_t			(lua_hashsize) (lua_State *L, int idx);
 LUA_API lua_CFunction   (lua_tocfunction) (lua_State *L, int idx);
 LUA_API void	       *(lua_touserdata) (lua_State *L, int idx);
 LUA_API lua_State      *(lua_tothread) (lua_State *L, int idx);
@@ -294,7 +292,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 #define lua_Chunkreader		lua_Reader
 #define lua_Chunkwriter		lua_Writer
 
-//end
+
 
 /*
 ** {======================================================================
@@ -355,7 +353,6 @@ struct lua_Debug {
   /* private part */
   int i_ci;  /* active function */
 };
-
 
 /* }====================================================================== */
 

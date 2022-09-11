@@ -1,5 +1,5 @@
 /*
-** $Id: luaconf.h,v 1.81 2006/02/10 17:44:06 roberto Exp $
+** $Id: luaconf.h,v 1.80 2006/01/27 13:54:39 roberto Exp roberto $
 ** Configuration file for Lua
 ** See Copyright Notice in lua.h
 */
@@ -58,6 +58,7 @@
 #define LUA_USE_ULONGJMP
 #endif
 
+
 /*
 @@ LUA_PATH_DEFAULT is the default path that Lua uses to look for
 @* Lua libraries.
@@ -68,7 +69,6 @@
 ** non-conventional directories.
 */
 #if defined(_WIN32)
-
 /*
 ** In Windows, any exclamation mark ('!') in the path is replaced by the
 ** path of the directory of the executable file of the current process.
@@ -489,14 +489,13 @@
 */
 
 #define LUA_NUMBER_DOUBLE
-//changed! for compatibilty when passing numeric value from game script to DLL.
-#define LUA_NUMBER	float 
+#define LUA_NUMBER	float
 
 /*
 @@ LUAI_UACNUMBER is the result of an 'usual argument conversion'
 @* over a number.
 */
-#define LUAI_UACNUMBER	double
+#define LUAI_UACNUMBER	float
 
 
 /*
