@@ -1,10 +1,10 @@
- include/lrdb/basic_server.hpp          | 395 ++++++++++++++++++---------------
+ include/lrdb/basic_server.hpp          | 388 ++++++++++-----------
  include/lrdb/command_stream/socket.hpp |   1 +
- include/lrdb/debugger.hpp              |  35 ++-
- 3 files changed, 243 insertions(+), 188 deletions(-)
+ include/lrdb/debugger.hpp              | 595 +++++++--------------------------
+ 3 files changed, 330 insertions(+), 654 deletions(-)
 
 diff --git a/include/lrdb/basic_server.hpp b/include/lrdb/basic_server.hpp
-index 8d338ab..7f9ee35 100644
+index 8d338ab..1adab01 100644
 --- a/include/lrdb/basic_server.hpp
 +++ b/include/lrdb/basic_server.hpp
 @@ -4,6 +4,7 @@
@@ -15,7 +15,7 @@ index 8d338ab..7f9ee35 100644
  
  #include "debugger.hpp"
  #include "message.hpp"
-@@ -31,219 +32,253 @@ namespace lrdb {
+@@ -31,219 +32,227 @@ namespace lrdb {
  ///  std::function<void(const std::string&)> on_error;
  template <typename StreamType>
  class basic_server {
@@ -52,9 +52,8 @@ index 8d338ab..7f9ee35 100644
 -    send_notify(notify_message("exit"));
 -    command_stream_.close();
 -  }
- 
+-
 -  StreamType& command_stream() { return command_stream_; };
-+    ~basic_server() { exit(); }
  
 - private:
 -  void init() {
@@ -65,26 +64,14 @@ index 8d338ab..7f9ee35 100644
 -      }
 -      send_notify(notify_message("running"));
 -    });
-+    /// @brief attach (or detach) for debug target
-+    /// @param lua_State*  debug target
-+    void reset(lua_State* L = 0) {
-+        debugger_.reset(L);
-+        if (!L) {
-+            exit();
-+        }
-+    }
- 
+-
 -    debugger_.set_tick_handler([&](debugger&) {
 -      if (wait_for_connect_) {
 -        command_stream_.wait_for_connection();
 -      }
 -      command_stream_.poll();
 -    });
-+    /// @brief Exit debug server
-+    void exit() {
-+        send_notify(notify_message("exit"));
-+        command_stream_.close();
-+    }
++    ~basic_server() { exit(); }
  
 -    command_stream_.on_connection = [=]() { connected_done(); };
 -    command_stream_.on_data = [=](const std::string& data) {
@@ -109,6 +96,44 @@ index 8d338ab..7f9ee35 100644
 -
 -    param["lua"] = json::value(lua);
 -    send_notify(notify_message("connected", json::value(param)));
+-  }
++    /// @brief attach (or detach) for debug target
++    /// @param lua_State*  debug target
++    void reset(lua_State* L = 0) {
++        debugger_.reset(L);
++        if (!L) {
++            exit();
++        }
++    }
+ 
+-  bool send_message(const std::string& message) {
+-    return command_stream_.send_message(message);
+-  }
+-  void execute_message(const std::string& message) {
+-    json::value msg;
+-    std::string err = json::parse(msg, message);
+-    if (err.empty()) {
+-      if (message::is_request(msg)) {
+-        request_message request;
+-        message::parse(msg, request);
+-        execute_request(request);
+-      }
++    /// @brief Exit debug server
++    void exit() {
++        send_notify(notify_message("exit"));
++        command_stream_.close();
+     }
+-  }
+ 
+-  bool send_notify(const notify_message& message) {
+-    return send_message(message::serialize(message));
+-  }
+-  bool send_response(response_message& message) {
+-    return send_message(message::serialize(message));
+-  }
+-  bool step_request(response_message& response, const json::value&) {
+-    debugger_.step();
+-    return send_response(response);
 -  }
 +    StreamType& command_stream() { return command_stream_; };
 +
@@ -154,55 +179,6 @@ index 8d338ab..7f9ee35 100644
 +        send_notify(notify_message("connected", json::value(param)));
 +    }
  
--  bool send_message(const std::string& message) {
--    return command_stream_.send_message(message);
--  }
--  void execute_message(const std::string& message) {
--    json::value msg;
--    std::string err = json::parse(msg, message);
--    if (err.empty()) {
--      if (message::is_request(msg)) {
--        request_message request;
--        message::parse(msg, request);
--        execute_request(request);
--      }
-+    bool send_message(const std::string& message) {
-+        return command_stream_.send_message(message);
-+    }
-+    void execute_message(const std::string& message) {
-+        json::value msg;
-+        std::string err = json::parse(msg, message);
-+        if (err.empty()) {
-+            if (message::is_request(msg)) {
-+                request_message request;
-+                message::parse(msg, request);
-+                execute_request(request);
-+            }
-+        }
-     }
--  }
- 
--  bool send_notify(const notify_message& message) {
--    return send_message(message::serialize(message));
--  }
--  bool send_response(response_message& message) {
--    return send_message(message::serialize(message));
--  }
--  bool step_request(response_message& response, const json::value&) {
--    debugger_.step();
--    return send_response(response);
--  }
-+    bool send_notify(const notify_message& message) {
-+        return send_message(message::serialize(message));
-+    }
-+    bool send_response(response_message& message) {
-+        return send_message(message::serialize(message));
-+    }
-+    bool step_request(response_message& response, const json::value&) {
-+        debugger_.step();
-+        return send_response(response);
-+    }
- 
 -  bool step_in_request(response_message& response, const json::value&) {
 -    debugger_.step_in();
 -    return send_response(response);
@@ -242,10 +218,57 @@ index 8d338ab..7f9ee35 100644
 -            param.get<json::object>().at("hit_condition").get<std::string>();
 -      }
 -      debugger_.add_breakpoint(source, line, condition, hit_condition);
++    bool send_message(const std::string& message) {
++        return command_stream_.send_message(message);
++    }
++    void execute_message(const std::string& message) {
++        json::value msg;
++        std::string err = json::parse(msg, message);
++        if (err.empty()) {
++            if (message::is_request(msg)) {
++                request_message request;
++                message::parse(msg, request);
++                execute_request(request);
++            }
++        }
++    }
+ 
+-    } else {
+-      response.error =
+-          response_error(response_error::InvalidParams, "invalid params");
++    bool send_notify(const notify_message& message) {
++        return send_message(message::serialize(message));
++    }
++    bool send_response(response_message& message) {
++        return send_message(message::serialize(message));
++    }
++    bool step_request(response_message& response, const json::value&) {
++        debugger_.step();
++        return send_response(response);
+     }
+-    return send_response(response);
+-  }
+ 
+-  bool clear_breakpoints_request(response_message& response,
+-                                 const json::value& param) {
+-    bool has_source = param.get("file").is<std::string>();
+-    bool has_line = param.get("line").is<double>();
+-    if (!has_source) {
+-      debugger_.clear_breakpoints();
+-    } else {
+-      std::string source =
+-          param.get<json::object>().at("file").get<std::string>();
+-      if (!has_line) {
+-        debugger_.clear_breakpoints(source);
+-      } else {
+-        int line = static_cast<int>(
+-            param.get<json::object>().at("line").get<double>());
+-        debugger_.clear_breakpoints(source, line);
+-      }
 +    bool step_in_request(response_message& response, const json::value&) {
 +        debugger_.step_in();
 +        return send_response(response);
-+    }
+     }
 +    bool step_out_request(response_message& response, const json::value&) {
 +        debugger_.step_out();
 +        return send_response(response);
@@ -285,35 +308,19 @@ index 8d338ab..7f9ee35 100644
 +
 +            debugger_.add_breakpoint(source, line, condition, hit_condition);
  
--    } else {
--      response.error =
--          response_error(response_error::InvalidParams, "invalid params");
+-    return send_response(response);
+-  }
 +        }
 +        else {
 +            response.error =
 +                response_error(response_error::InvalidParams, "invalid params");
 +        }
 +        return send_response(response);
-     }
--    return send_response(response);
--  }
++    }
  
--  bool clear_breakpoints_request(response_message& response,
--                                 const json::value& param) {
--    bool has_source = param.get("file").is<std::string>();
--    bool has_line = param.get("line").is<double>();
--    if (!has_source) {
--      debugger_.clear_breakpoints();
--    } else {
--      std::string source =
--          param.get<json::object>().at("file").get<std::string>();
--      if (!has_line) {
--        debugger_.clear_breakpoints(source);
--      } else {
--        int line = static_cast<int>(
--            param.get<json::object>().at("line").get<double>());
--        debugger_.clear_breakpoints(source, line);
--      }
+-  bool get_breakpoints_request(response_message& response, const json::value&) {
+-    const debugger::line_breakpoint_type& breakpoints =
+-        debugger_.line_breakpoints();
 +    bool clear_breakpoints_request(response_message& response,
 +        const json::value& param) {
 +        bool has_source = param.get("file").is<std::string>();
@@ -334,12 +341,24 @@ index 8d338ab..7f9ee35 100644
 +                std::cout << "removed breakpoint " << source << " line nr " << line << std::endl;
 +            }
 +        }
-+
+ 
+-    json::array res;
+-    for (const auto& b : breakpoints) {
+-      json::object br;
+-      br["file"] = json::value(b.file);
+-      if (!b.func.empty()) {
+-        br["func"] = json::value(b.func);
+-      }
+-      br["line"] = json::value(double(b.line));
+-      if (!b.condition.empty()) {
+-        br["condition"] = json::value(b.condition);
+-      }
+-      br["hit_count"] = json::value(double(b.hit_count));
+-      res.push_back(json::value(br));
 +        return send_response(response);
      }
  
--    return send_response(response);
--  }
+-    response.result = json::value(res);
 +    bool get_breakpoints_request(response_message& response, const json::value&) {
 +        const debugger::line_breakpoint_type& breakpoints =
 +            debugger_.line_breakpoints();
@@ -359,61 +378,17 @@ index 8d338ab..7f9ee35 100644
 +            res.push_back(json::value(br));
 +        }
  
--  bool get_breakpoints_request(response_message& response, const json::value&) {
--    const debugger::line_breakpoint_type& breakpoints =
--        debugger_.line_breakpoints();
-+        response.result = json::value(res);
- 
--    json::array res;
--    for (const auto& b : breakpoints) {
--      json::object br;
--      br["file"] = json::value(b.file);
--      if (!b.func.empty()) {
--        br["func"] = json::value(b.func);
--      }
--      br["line"] = json::value(double(b.line));
--      if (!b.condition.empty()) {
--        br["condition"] = json::value(b.condition);
--      }
--      br["hit_count"] = json::value(double(b.hit_count));
--      res.push_back(json::value(br));
-+        return send_response(response);
-     }
- 
--    response.result = json::value(res);
--
 -    return send_response(response);
 -  }
-+#define LEVELS1	10	/* size of the first part of the stack */
-+#define LEVELS2	8	/* size of the second part of the stack */
++        response.result = json::value(res);
 +
-+    void get_traceback(lua_State* L, std::vector<lua_Debug>& result) {
-+        int level = 0;
-+        int firstpart = 1;  /* still before eventual `...' */
-+        lua_Debug ar;
-+        memset(&ar, 0, sizeof(ar));
-+        while (lua_getstack(L, level++, &ar)) {
-+            if (level > LEVELS1 && firstpart) {
-+                /* no more than `LEVELS2' more levels? */
-+                if (!lua_getstack(L, level + LEVELS2, &ar))
-+                    level--;  /* keep going */
-+                else {
-+                    while (lua_getstack(L, level + LEVELS2, &ar))  /* find last levels */
-+                        level++;
-+                }
-+                firstpart = 0;
-+                continue;
-+            }
-+            lua_getinfo(L, "Snl", &ar);
-+            result.push_back(ar);
-+            memset(&ar, 0, sizeof(ar));
-+        }
++        return send_response(response);
 +    }
  
    bool get_stacktrace_request(response_message& response, const json::value&) {
 -    auto callstack = debugger_.get_call_stack();
 +    std::vector<lua_Debug> debuginfo;
-+    get_traceback(debugger_.get_state(), debuginfo);
++    debugger_.get_traceback(debuginfo);
      json::array res;
 -    for (auto& s : callstack) {
 +    for (auto& s : debuginfo) {
@@ -449,6 +424,48 @@ index 8d338ab..7f9ee35 100644
        res.push_back(json::value(data));
      }
      response.result = json::value(res);
+@@ -265,9 +274,10 @@ class basic_server {
+                     : 1;
+     if (has_stackno) {
+       int stack_no = static_cast<int>(param.get("stack_no").get<double>());
+-      auto callstack = debugger_.get_call_stack();
++      std::vector<lua_Debug> callstack;
++      debugger_.get_traceback(callstack);
+       if (int(callstack.size()) > stack_no) {
+-        auto localvar = callstack[stack_no].get_local_vars(depth);
++        auto localvar = debugger_.get_local_vars(&callstack[stack_no], stack_no, depth);
+         json::object obj;
+         for (auto& var : localvar) {
+           obj[var.first] = var.second;
+@@ -297,9 +307,10 @@ class basic_server {
+     if (has_stackno) {
+       int stack_no = static_cast<int>(
+           param.get<json::object>().at("stack_no").get<double>());
+-      auto callstack = debugger_.get_call_stack();
++      std::vector<lua_Debug> callstack;
++      debugger_.get_traceback(callstack);
+       if (int(callstack.size()) > stack_no) {
+-        auto localvar = callstack[stack_no].get_upvalues(depth);
++        auto localvar = debugger_.get_upvalues(&callstack[stack_no], depth);
+         json::object obj;
+         for (auto& var : localvar) {
+           obj[var.first] = var.second;
+@@ -335,12 +346,11 @@ class basic_server {
+           param.get<json::object>().at("chunk").get<std::string>();
+       int stack_no = static_cast<int>(
+           param.get<json::object>().at("stack_no").get<double>());
+-      auto callstack = debugger_.get_call_stack();
++      std::vector<lua_Debug> callstack;
++      debugger_.get_traceback(callstack);
+       if (int(callstack.size()) > stack_no) {
+         std::string error;
+-        json::value ret = json::value(
+-            callstack[stack_no].eval(chunk.c_str(), error, use_global,
+-                                     use_upvalue, use_local, depth + 1));
++        json::value ret = json::value(debugger_.eval(chunk.c_str()));
+         if (error.empty()) {
+           response.result = ret;
+ 
 diff --git a/include/lrdb/command_stream/socket.hpp b/include/lrdb/command_stream/socket.hpp
 index a501af9..cc62c97 100644
 --- a/include/lrdb/command_stream/socket.hpp
@@ -462,7 +479,7 @@ index a501af9..cc62c97 100644
                                 }
                                 start_receive_commands();
 diff --git a/include/lrdb/debugger.hpp b/include/lrdb/debugger.hpp
-index e9e69fc..0a95ea0 100644
+index e9e69fc..ab61932 100644
 --- a/include/lrdb/debugger.hpp
 +++ b/include/lrdb/debugger.hpp
 @@ -6,6 +6,8 @@
@@ -474,23 +491,444 @@ index e9e69fc..0a95ea0 100644
  
  #include <cmath>
  
-@@ -551,13 +553,14 @@ class debug_info {
-   friend class debugger;
-   friend class stack_info;
+@@ -36,6 +38,9 @@ inline void lua_rawgetp(lua_State* L, int index, void* p) {
+   lua_rawget(L, LUA_REGISTRYINDEX);
+ }
+ #endif
++
++typedef std::vector<std::pair<std::string, json::value> > local_vars_type;
++
+ namespace utility {
  
-+public:
-   lua_State* state_;
-   lua_Debug* debug_;
-   std::string got_debug_;
+ /// @brief Lua stack value convert to json
+@@ -187,426 +192,6 @@ struct breakpoint_info {
+   size_t hit_count;           /// breakpoint hit counts
  };
  
- /// @brief stack frame infomation data
+-/// @brief debug data
+-/// this data is available per stack frame
+-class debug_info {
+- public:
+-  typedef std::vector<std::pair<std::string, json::value> > local_vars_type;
+-  debug_info() : state_(0), debug_(0) {}
+-  debug_info(const debug_info& other)
+-      : state_(other.state_),
+-        debug_(other.debug_),
+-        got_debug_(other.got_debug_) {}
+-  debug_info& operator=(const debug_info& other) {
+-    state_ = other.state_;
+-    debug_ = other.debug_;
+-    got_debug_ = other.got_debug_;
+-    return *this;
+-  }
+-  void assign(lua_State* L, lua_Debug* debug, const char* got_type = 0) {
+-    state_ = L;
+-    debug_ = debug;
+-    got_debug_.clear();
+-    if (got_type) {
+-      got_debug_.append(got_type);
+-    }
+-    if (debug->event == LUA_HOOKLINE) {
+-      got_debug_.append("l");
+-    }
+-  }
+-  bool is_available_info(const char* type) const {
+-    return got_debug_.find(type) != std::string::npos;
+-  }
+-  bool get_info(const char* type) {
+-    if (!is_available()) {
+-      return 0;
+-    }
+-    if (is_available_info(type)) {
+-      return true;
+-    }
+-    return lua_getinfo(state_, type, debug_) != 0;
+-  }
+-  /// @breaf get name
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  const char* name() {
+-    if (!get_info("n") || !debug_->name) {
+-      return "";
+-    }
+-    return debug_->name;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  const char* namewhat() {
+-    if (!get_info("n") || !debug_->namewhat) {
+-      return "";
+-    }
+-    return debug_->namewhat;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  const char* what() {
+-    if (!get_info("S") || !debug_->what) {
+-      return "";
+-    }
+-    return debug_->what;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  const char* source() {
+-    if (!get_info("S") || !debug_->source) {
+-      return "";
+-    }
+-    return debug_->source;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  int currentline() {
+-    if (!get_info("l")) {
+-      return -1;
+-    }
+-    return debug_->currentline;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  int linedefined() {
+-    if (!get_info("S")) {
+-      return -1;
+-    }
+-    return debug_->linedefined;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  int lastlinedefined() {
+-    if (!get_info("S")) {
+-      return -1;
+-    }
+-    return debug_->lastlinedefined;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  int number_of_upvalues() {
+-    if (!get_info("u")) {
+-      return -1;
+-    }
+-    return debug_->nups;
+-  }
+-#if LUA_VERSION_NUM >= 502
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  int number_of_parameters() {
+-    if (!get_info("u")) {
+-      return -1;
+-    }
+-    return debug_->nparams;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  bool is_variadic_arg() {
+-    if (!get_info("u")) {
+-      return false;
+-    }
+-    return debug_->isvararg != 0;
+-  }
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  bool is_tailcall() {
+-    if (!get_info("t")) {
+-      return false;
+-    }
+-    return debug_->istailcall != 0;
+-  }
+-#endif
+-  /// @link https://www.lua.org/manual/5.3/manual.html#4.9
+-  const char* short_src() {
+-    if (!get_info("S")) {
+-      return "";
+-    }
+-    return debug_->short_src;
+-  }
+-  /*
+-  std::vector<bool> valid_lines_on_function() {
+-    std::vector<bool> ret;
+-    lua_getinfo(state_, "fL", debug_);
+-    lua_pushnil(state_);
+-    while (lua_next(state_, -2) != 0) {
+-      int t = lua_type(state_, -1);
+-      ret.push_back(lua_toboolean(state_, -1));
+-      lua_pop(state_, 1);  // pop value
+-    }
+-    lua_pop(state_, 2);
+-    return ret;
+-  }*/
+-
+-  /// @brief evaluate script
+-  /// e.g.
+-  /// auto ret = debuginfo.eval("return 4,6");
+-  /// for(auto r: ret){std::cout << r.get<double>() << ,;}//output "4,6,"
+-  /// @param script luascript string
+-  /// @param global execute environment include global
+-  /// @param upvalue execute environment include upvalues
+-  /// @param local execute environment include local variables
+-  /// @param object_depth depth of extract for table for return value
+-  /// @return array of name and value pair
+-  std::vector<json::value> eval(const char* script, bool global = true,
+-                                bool upvalue = true, bool local = true,
+-                                int object_depth = 1) {
+-    std::string error;
+-    std::vector<json::value> ret =
+-        eval(script, error, global, upvalue, local, object_depth);
+-    if (!error.empty()) {
+-      ret.push_back(json::value(error));
+-    }
+-    return ret;
+-  }
+-
+-  std::vector<json::value> eval(const char* script, std::string& error,
+-                                bool global = true, bool upvalue = true,
+-                                bool local = true, int object_depth = 1) {
+-    int stack_start = lua_gettop(state_);
+-    int loadstat =
+-        luaL_loadstring(state_, (std::string("return ") + script).c_str());
+-    if (loadstat != 0) {
+-      lua_pop(state_, 1);
+-      loadstat = luaL_loadstring(state_, script);
+-    }
+-    if (!lua_isfunction(state_, -1)) {
+-      error = lua_tostring(state_, -1);
+-      return std::vector<json::value>();
+-    }
+-
+-    create_eval_env(global, upvalue, local);
+-#if LUA_VERSION_NUM >= 502
+-    lua_setupvalue(state_, -2, 1);
+-#else
+-    lua_setfenv(state_, -2);
+-#endif
+-    int call_stat = lua_pcall(state_, 0, LUA_MULTRET, 0);
+-    if (call_stat != 0) {
+-      error = lua_tostring(state_, -1);
+-      return std::vector<json::value>();
+-    }
+-    std::vector<json::value> ret;
+-    int ret_end = lua_gettop(state_);
+-    for (int retindex = stack_start + 1; retindex <= ret_end; ++retindex) {
+-      ret.push_back(utility::to_json(state_, retindex, object_depth));
+-    }
+-    lua_settop(state_, stack_start);
+-    return ret;
+-  }
+-  /// @brief get local variables
+-  /// @param object_depth depth of extract for table for return value
+-  /// @return array of name and value pair
+-  local_vars_type get_local_vars(int object_depth = 0) {
+-    local_vars_type localvars;
+-    int varno = 1;
+-    while (const char* varname = lua_getlocal(state_, debug_, varno++)) {
+-      if (varname[0] != '(') {
+-        localvars.push_back(std::pair<std::string, json::value>(
+-            varname, utility::to_json(state_, -1, object_depth)));
+-      }
+-      lua_pop(state_, 1);
+-    }
+-#if LUA_VERSION_NUM >= 502
+-    if (is_variadic_arg()) {
+-      json::array va;
+-      int varno = -1;
+-      while (const char* varname = lua_getlocal(state_, debug_, varno--)) {
+-        (void)varname;  // unused
+-        va.push_back(utility::to_json(state_, -1));
+-        lua_pop(state_, 1);
+-      }
+-      localvars.push_back(
+-          std::pair<std::string, json::value>("(*vararg)", json::value(va)));
+-    }
+-#endif
+-    return localvars;
+-  }
+-  /// @brief set local variables
+-  /// @param name local variable name
+-  /// @param v assign value
+-  /// @return If set is successful, return true. Otherwise return false.
+-  bool set_local_var(const char* name, const json::value& v) {
+-    local_vars_type vars = get_local_vars();
+-    for (size_t index = 0; index < vars.size(); ++index) {
+-      if (vars[index].first == name) {
+-        return set_local_var(index, v);
+-      }
+-    }
+-    return false;  // local variable name not found
+-  }
+-
+-  /// @brief set local variables
+-  /// @param local_var_index local variable index
+-  /// @param v assign value
+-  /// @return If set is successful, return true. Otherwise return false.
+-  bool set_local_var(int local_var_index, const json::value& v) {
+-    utility::push_json(state_, v);
+-    return lua_setlocal(state_, debug_, local_var_index + 1) != 0;
+-  }
+-
+-  /// @brief get upvalues
+-  /// @param object_depth depth of extract for table for return value
+-  /// @return array of name and value pair
+-  local_vars_type get_upvalues(int object_depth = 0) {
+-    local_vars_type localvars;
+-
+-    lua_getinfo(state_, "f", debug_);  // push current running function
+-    int upvno = 1;
+-    while (const char* varname = lua_getupvalue(state_, -1, upvno++)) {
+-      localvars.push_back(std::pair<std::string, json::value>(
+-          varname, utility::to_json(state_, -1, object_depth)));
+-      lua_pop(state_, 1);
+-    }
+-    lua_pop(state_, 1);  // pop current running function
+-    return localvars;
+-  }
+-  /// @brief set upvalue
+-  /// @param name upvalue name
+-  /// @param v assign value
+-  /// @return If set is successful, return true. Otherwise return false.
+-  bool set_upvalue(const char* name, const json::value& v) {
+-    local_vars_type vars = get_upvalues();
+-    for (size_t index = 0; index < vars.size(); ++index) {
+-      if (vars[index].first == name) {
+-        return set_upvalue(index, v);
+-      }
+-    }
+-    return false;  // local variable name not found
+-  }
+-
+-  /// @brief set upvalue
+-  /// @param var_index upvalue index
+-  /// @param v assign value
+-  /// @return If set is successful, return true. Otherwise return false.
+-  bool set_upvalue(int var_index, const json::value& v) {
+-    lua_getinfo(state_, "f", debug_);  // push current running function
+-    int target_functin_index = lua_gettop(state_);
+-    utility::push_json(state_, v);
+-    bool ret = lua_setupvalue(state_, target_functin_index, var_index + 1) != 0;
+-    lua_pop(state_, 1);  // pop current running function
+-    return ret;
+-  }
+-  /// @brief data is available
+-  /// @return If data is available, return true. Otherwise return false.
+-  bool is_available() { return state_ && debug_; }
+-
+- private:
+-  void create_eval_env(bool global = true, bool upvalue = true,
+-                       bool local = true) {
+-    lua_createtable(state_, 0, 0);
+-    int envtable = lua_gettop(state_);
+-    lua_createtable(state_, 0, 0);  // create metatable for env
+-    int metatable = lua_gettop(state_);
+-    // use global
+-    if (global) {
+-      lua_pushglobaltable(state_);
+-      lua_setfield(state_, metatable, "__index");
+-    }
+-
+-    // use upvalue
+-    if (upvalue) {
+-      lua_getinfo(state_, "f", debug_);  // push current running function
+-
+-#if LUA_VERSION_NUM < 502
+-      lua_getfenv(state_, -1);
+-      lua_setfield(state_, metatable, "__index");
+-#endif
+-      int upvno = 1;
+-      while (const char* varname = lua_getupvalue(state_, -1, upvno++)) {
+-        if (strcmp(varname, "_ENV") == 0)  // override _ENV
+-        {
+-          lua_pushvalue(state_, -1);
+-          lua_setfield(state_, metatable, "__index");
+-        }
+-        lua_setfield(state_, envtable, varname);
+-      }
+-      lua_pop(state_, 1);  // pop current running function
+-    }
+-    // use local vars
+-    if (local) {
+-      int varno = 0;
+-      while (const char* varname = lua_getlocal(state_, debug_, ++varno)) {
+-        if (strcmp(varname, "_ENV") == 0)  // override _ENV
+-        {
+-          lua_pushvalue(state_, -1);
+-          lua_setfield(state_, metatable, "__index");
+-        }
+-        lua_setfield(state_, envtable, varname);
+-      }
+-#if LUA_VERSION_NUM >= 502
+-      // va arg
+-      if (is_variadic_arg()) {
+-        varno = 0;
+-        lua_createtable(state_, 0, 0);
+-        while (const char* varname = lua_getlocal(state_, debug_, --varno)) {
+-          (void)varname;  // unused
+-          lua_rawseti(state_, -2, -varno);
+-        }
+-        if (varno < -1) {
+-          lua_setfield(state_, envtable, "(*vararg)");
+-        } else {
+-          lua_pop(state_, 1);
+-        }
+-      }
+-#endif
+-    }
+-    lua_setmetatable(state_, envtable);
+-#if LUA_VERSION_NUM < 502
+-    lua_pushvalue(state_, envtable);
+-    lua_setfield(state_, envtable, "_ENV");
+-#endif
+-    return;
+-  }
+-
+-  friend class debugger;
+-  friend class stack_info;
+-
+-  lua_State* state_;
+-  lua_Debug* debug_;
+-  std::string got_debug_;
+-};
+-
+-/// @brief stack frame infomation data
 -class stack_info : private debug_info {
-+class stack_info : public debug_info {
+- public:
+-  stack_info(lua_State* L, int level) {
+-    memset(&debug_var_, 0, sizeof(debug_var_));
+-    valid_ = lua_getstack(L, level, &debug_var_) != 0;
+-    if (valid_) {
+-      assign(L, &debug_var_);
+-    }
+-  }
+-  stack_info(const stack_info& other)
+-      : debug_info(other), debug_var_(other.debug_var_), valid_(other.valid_) {
+-    debug_ = &debug_var_;
+-  }
+-  stack_info& operator=(const stack_info& other) {
+-    debug_info::operator=(other);
+-    debug_var_ = other.debug_var_;
+-    valid_ = other.valid_;
+-    debug_ = &debug_var_;
+-    return *this;
+-  }
+-  bool is_available() { return valid_ && debug_info::is_available(); }
+-  ~stack_info() { debug_ = 0; }
+-  using debug_info::assign;
+-  using debug_info::currentline;
+-  using debug_info::get_info;
+-  using debug_info::is_available_info;
+-  using debug_info::lastlinedefined;
+-  using debug_info::linedefined;
+-  using debug_info::name;
+-  using debug_info::namewhat;
+-  using debug_info::number_of_upvalues;
+-  using debug_info::source;
+-  using debug_info::what;
+-#if LUA_VERSION_NUM >= 502
+-  using debug_info::is_tailcall;
+-  using debug_info::is_variadic_arg;
+-  using debug_info::number_of_parameters;
+-#endif
+-  using debug_info::eval;
+-  using debug_info::get_local_vars;
+-  using debug_info::get_upvalues;
+-  using debug_info::set_local_var;
+-  using debug_info::set_upvalue;
+-  using debug_info::short_src;
+-
+- private:
+-  lua_Debug debug_var_;
+-  bool valid_;
+-};
+-
+ /// @brief Debugging interface class
+ class debugger {
   public:
-   stack_info(lua_State* L, int level) {
-     memset(&debug_var_, 0, sizeof(debug_var_));
-@@ -614,6 +617,8 @@ class debugger {
+@@ -614,12 +199,40 @@ class debugger {
    typedef std::function<void(debugger& debugger)> pause_handler_type;
    typedef std::function<void(debugger& debugger)> tick_handler_type;
  
@@ -499,26 +937,172 @@ index e9e69fc..0a95ea0 100644
    debugger() : state_(0), pause_(true), step_type_(STEP_ENTRY) {}
    debugger(lua_State* L) : state_(0), pause_(true), step_type_(STEP_ENTRY) {
      reset(L);
-@@ -820,7 +825,10 @@ class debugger {
+   }
+   ~debugger() { reset(); }
+ 
++
++#define LEVELS1	10	/* size of the first part of the stack */
++#define LEVELS2	8	/* size of the second part of the stack */
++
++  void get_traceback(std::vector<lua_Debug>& result) {
++      int level = 0;
++      int firstpart = 1;  /* still before eventual `...' */
++      lua_Debug ar;
++      memset(&ar, 0, sizeof(ar));
++      while (lua_getstack(state_, level++, &ar)) {
++          if (level > LEVELS1 && firstpart) {
++              /* no more than `LEVELS2' more levels? */
++              if (!lua_getstack(state_, level + LEVELS2, &ar))
++                  level--;  /* keep going */
++              else {
++                  while (lua_getstack(state_, level + LEVELS2, &ar))  /* find last levels */
++                      level++;
++              }
++              firstpart = 0;
++              continue;
++          }
++          lua_getinfo(state_, "Snl", &ar);
++          result.push_back(ar);
++          memset(&ar, 0, sizeof(ar));
++      }
++  }
+   /// @brief add breakpoints
+   /// @param file filename
+   /// @param line line number
+@@ -680,9 +293,6 @@ class debugger {
+     pause_handler_ = handler;
+   }
+ 
+-  /// @brief get current debug info,i.e. executing stack frame top.
+-  debug_info& current_debug_info() { return current_debug_info_; }
+-
+   /// @brief get breakpoint
+   breakpoint_info* current_breakpoint() { return current_breakpoint_; }
+ 
+@@ -732,40 +342,83 @@ class debugger {
+ 
+   /// @brief step. same for step_over
+   void step() { step_over(); }
+-
++  int get_callstack_size() {
++    std::vector<lua_Debug> traceback;
++    get_traceback( traceback);
++    return traceback.size();
++  }
+   /// @brief step_over
+   void step_over() {
+     step_type_ = STEP_OVER;
+-    step_callstack_size_ = get_call_stack().size();
++    step_callstack_size_ = get_callstack_size();
+     pause_ = false;
+   }
+   /// @brief step in
+   void step_in() {
+     step_type_ = STEP_IN;
+-    step_callstack_size_ = get_call_stack().size();
++    step_callstack_size_ = get_callstack_size();
+     pause_ = false;
+   }
+   /// @brief step out
+   void step_out() {
+     step_type_ = STEP_OUT;
+-    step_callstack_size_ = get_call_stack().size();
++    step_callstack_size_ = get_callstack_size();
+     pause_ = false;
+   }
+-  /// @brief get call stack info
+-  /// @return array of call stack information
+-  std::vector<stack_info> get_call_stack() {
+-    std::vector<stack_info> ret;
+-    if (!current_debug_info_.state_) {
+-      return ret;
+-    }
+-    ret.push_back(stack_info(current_debug_info_.state_, 0));
+-    while (ret.back().is_available()) {
+-      ret.push_back(stack_info(current_debug_info_.state_, ret.size()));
+-    }
+-    ret.pop_back();
+-    return ret;
++  bool eval(const std::string command) {
++      std::string what2eval = std::string("return ") + command;
++      luaL_dostring(state_, what2eval.c_str());
++      return lua_toboolean(state_, -1);
++  }
++  local_vars_type get_local_vars(lua_Debug* debug, int pos, int object_depth = 0) {
++      local_vars_type localvars;
++      lua_checkstack(state_, 16);
++      lua_getstack(state_, pos, debug);
++      lua_getinfo(state_, "Snl", debug);
++      for (int i = 1;; ++i)
++      {
++          const char* name = lua_getlocal(state_, debug, i);
++          if (!name) break;
++          if (name[0] == '(') { 
++              localvars.push_back(std::pair<std::string, json::value>(
++                  name, utility::to_json(state_, -1, object_depth)));
++              lua_pop(state_, 1); 
++              continue; 
++          }
++          if (i % 10 == 0)
++          {
++              lua_checkstack(state_, 10);
++          }
++      }
++      return localvars;
+   }
++  local_vars_type get_upvalues(lua_Debug* wha_to_debug, int object_depth = 0) {
++      local_vars_type localvars;
+ 
++      lua_getinfo(state_, "f", wha_to_debug);  // push current running function
++      lua_checkstack(state_, 16);
++      for (int i = 1;; ++i)
++      {
++          const char* name = lua_getupvalue(state_, -1, i);
++          if (!name) break;
++          if (name[0] == '(') {
++              localvars.push_back(std::pair<std::string, json::value>(
++                  name, utility::to_json(state_, -1, object_depth)));
++              lua_pop(state_, 1);
++              continue;
++          }
++          if (i % 10 == 0)
++          {
++              lua_checkstack(state_, 10);
++          }
++      }
++      lua_pop(state_, 1);  // pop current running function
++      return localvars;
++  }
++  bool set_local_var(lua_Debug *debug, int local_var_index, const json::value& v) {
++      utility::push_json(state_, v);
++      return lua_setlocal(state_, debug, local_var_index + 1) != 0;
++  }
+   /// @brief get global table
+   /// @param object_depth depth of extract for return value
+   /// @return global table value
+@@ -820,35 +473,48 @@ class debugger {
        path2++;
      }
    }
 -
+-  breakpoint_info* search_breakpoints(debug_info& debuginfo) {
 +  void normalise_source_string(std::string& source) {
 +      std::replace(source.begin(), source.end(), '\\', '/');
 +      std::transform(source.begin(), source.end(), source.begin(), [](unsigned char c) { return std::tolower(c); });
 +  }
-   breakpoint_info* search_breakpoints(debug_info& debuginfo) {
++  breakpoint_info* search_breakpoints(const lua_Debug* debug) {
      if (line_breakpoints_.empty()) {
        return 0;
-@@ -829,15 +837,25 @@ class debugger {
+     }
+-    int currentline = debuginfo.currentline();
++    int currentline = debug->currentline;
      for (line_breakpoint_type::iterator it = line_breakpoints_.begin();
           it != line_breakpoints_.end(); ++it) {
        if (currentline == it->line) {
 -        const char* source = debuginfo.source();
 -        if (!source) {
 -          continue;
-+        const char* sourcePtr = debuginfo.source();
++        const char* sourcePtr = debug->source;
 +        if (!sourcePtr) {
 +            continue;
          }
@@ -543,11 +1127,81 @@ index e9e69fc..0a95ea0 100644
            return &(*it);
          }
        }
-@@ -964,6 +982,7 @@ class debugger {
+     }
+     return 0;
+   }
++
+   bool breakpoint_cond(const breakpoint_info& breakpoint,
+-                       debug_info& debuginfo) {
+-    if (!breakpoint.condition.empty()) {
+-      json::array condret = debuginfo.eval(breakpoint.condition.c_str());
+-      return !condret.empty() && condret[0].evaluate_as_boolean();
++                       const lua_Debug* debuginfo) {
++      if (!breakpoint.condition.empty()) {
++          return eval(breakpoint.condition.c_str());
+     }
+     return true;
+   }
+@@ -863,22 +529,20 @@ class debugger {
+   }
+ 
+   bool breakpoint_hit_cond(const breakpoint_info& breakpoint,
+-                           debug_info& debuginfo) {
++                           lua_Debug* debuginfo) {
+     if (!breakpoint.hit_condition.empty()) {
+-      json::array condret = debuginfo.eval(
+-          (std::to_string(breakpoint.hit_count) + breakpoint.hit_condition)
+-              .c_str());
+-
+-      return condret.empty() || condret[0].evaluate_as_boolean();
++        return eval(breakpoint.condition.c_str());
+     }
+     return true;
+   }
+   void hookline() {
+-    current_breakpoint_ = search_breakpoints(current_debug_info_);
++    lua_getstack(state_, 0, currentDebug_);
++    lua_getinfo(state_, "Snl", currentDebug_);
++    current_breakpoint_ = search_breakpoints(currentDebug_);
+     if (current_breakpoint_ &&
+-        breakpoint_cond(*current_breakpoint_, current_debug_info_)) {
++        breakpoint_cond(*current_breakpoint_, currentDebug_)) {
+       current_breakpoint_->hit_count++;
+-      if (breakpoint_hit_cond(*current_breakpoint_, current_debug_info_)) {
++      if (breakpoint_hit_cond(*current_breakpoint_, currentDebug_)) {
+         pause_ = true;
+       }
+     }
+@@ -896,7 +560,8 @@ class debugger {
+       return;
+     }
+ 
+-    std::vector<stack_info> callstack = get_call_stack();
++    std::vector<lua_Debug> callstack;
++    get_traceback( callstack);
+     switch (step_type_) {
+       case STEP_OVER:
+         if (step_callstack_size_ >= callstack.size()) {
+@@ -920,7 +585,7 @@ class debugger {
+     }
+   }
+   void hook(lua_State* L, lua_Debug* ar) {
+-    current_debug_info_.assign(L, ar);
++    currentDebug_ = ar;
+     current_breakpoint_ = 0;
+     tick();
+ 
+@@ -964,12 +629,12 @@ class debugger {
      STEP_ENTRY,
    };
  
-+
++  lua_Debug* currentDebug_;
    lua_State* state_;
    bool pause_;
    //  bool error_break_;
+   step_type step_type_;
+   size_t step_callstack_size_;
+-  debug_info current_debug_info_;
+   line_breakpoint_type line_breakpoints_;
+   breakpoint_info* current_breakpoint_;
+   pause_handler_type pause_handler_;
