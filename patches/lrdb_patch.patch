@@ -1,10 +1,10 @@
- include/lrdb/basic_server.hpp          |  7 ++++++-
- include/lrdb/command_stream/socket.hpp |  1 +
- include/lrdb/debugger.hpp              | 29 ++++++++++++++++++++++-------
- 3 files changed, 29 insertions(+), 8 deletions(-)
+ include/lrdb/basic_server.hpp          | 395 ++++++++++++++++++---------------
+ include/lrdb/command_stream/socket.hpp |   1 +
+ include/lrdb/debugger.hpp              |  35 ++-
+ 3 files changed, 243 insertions(+), 188 deletions(-)
 
 diff --git a/include/lrdb/basic_server.hpp b/include/lrdb/basic_server.hpp
-index 8d338ab..c0106a4 100644
+index 8d338ab..7f9ee35 100644
 --- a/include/lrdb/basic_server.hpp
 +++ b/include/lrdb/basic_server.hpp
 @@ -4,6 +4,7 @@
@@ -15,33 +15,440 @@ index 8d338ab..c0106a4 100644
  
  #include "debugger.hpp"
  #include "message.hpp"
-@@ -95,7 +96,7 @@ class basic_server {
+@@ -31,219 +32,253 @@ namespace lrdb {
+ ///  std::function<void(const std::string&)> on_error;
+ template <typename StreamType>
+ class basic_server {
+- public:
+-  /// @brief constructor
+-  /// @param arg Forward to StreamType constructor
+-  template <typename... StreamArgs>
+-  basic_server(StreamArgs&&... arg)
+-      : wait_for_connect_(true),
++public:
++    /// @brief constructor
++    /// @param arg Forward to StreamType constructor
++    template <typename... StreamArgs>
++    basic_server(StreamArgs&&... arg)
++        : wait_for_connect_(true),
+         command_stream_(std::forward<StreamArgs>(arg)...) {
+-    init();
+-  }
+-
+-  ~basic_server() { exit(); }
+-
+-  /// @brief attach (or detach) for debug target
+-  /// @param lua_State*  debug target
+-  void reset(lua_State* L = 0) {
+-    debugger_.reset(L);
+-    if (!L) {
+-      exit();
++        init();
+     }
+-  }
+-
+-  /// @brief Exit debug server
+-  void exit() {
+-    send_notify(notify_message("exit"));
+-    command_stream_.close();
+-  }
  
-     json::object lua;
-     lua["version"] = json::value(LUA_VERSION);
+-  StreamType& command_stream() { return command_stream_; };
++    ~basic_server() { exit(); }
+ 
+- private:
+-  void init() {
+-    debugger_.set_pause_handler([&](debugger&) {
+-      send_pause_status();
+-      while (debugger_.paused() && command_stream_.is_open()) {
+-        command_stream_.run_one();
+-      }
+-      send_notify(notify_message("running"));
+-    });
++    /// @brief attach (or detach) for debug target
++    /// @param lua_State*  debug target
++    void reset(lua_State* L = 0) {
++        debugger_.reset(L);
++        if (!L) {
++            exit();
++        }
++    }
+ 
+-    debugger_.set_tick_handler([&](debugger&) {
+-      if (wait_for_connect_) {
+-        command_stream_.wait_for_connection();
+-      }
+-      command_stream_.poll();
+-    });
++    /// @brief Exit debug server
++    void exit() {
++        send_notify(notify_message("exit"));
++        command_stream_.close();
++    }
+ 
+-    command_stream_.on_connection = [=]() { connected_done(); };
+-    command_stream_.on_data = [=](const std::string& data) {
+-      execute_message(data);
+-    };
+-    command_stream_.on_close = [=]() { debugger_.unpause(); };
+-  }
+-  void send_pause_status() {
+-    json::object pauseparam;
+-    pauseparam["reason"] = json::value(debugger_.pause_reason());
+-    send_notify(notify_message("paused", json::value(pauseparam)));
+-  }
+-  void connected_done() {
+-    wait_for_connect_ = false;
+-    json::object param;
+-    param["protocol_version"] = json::value(LRDB_SERVER_PROTOCOL_VERSION);
+-
+-    json::object lua;
+-    lua["version"] = json::value(LUA_VERSION);
 -    lua["release"] = json::value(LUA_RELEASE);
-+    lua["release"] = json::value("none");
-     lua["copyright"] = json::value(LUA_COPYRIGHT);
- 
-     param["lua"] = json::value(lua);
-@@ -166,6 +167,9 @@ class basic_server {
-         hit_condition =
-             param.get<json::object>().at("hit_condition").get<std::string>();
-       }
+-    lua["copyright"] = json::value(LUA_COPYRIGHT);
+-
+-    param["lua"] = json::value(lua);
+-    send_notify(notify_message("connected", json::value(param)));
+-  }
++    StreamType& command_stream() { return command_stream_; };
 +
-+      std::cout << "added breakpoint " << source << " line nr " << line << std::endl;
++private:
++    void init() {
++        debugger_.set_pause_handler([&](debugger&) {
++            send_pause_status();
++            while (debugger_.paused() && command_stream_.is_open()) {
++                command_stream_.run_one();
++            }
++            send_notify(notify_message("running"));
++            });
 +
-       debugger_.add_breakpoint(source, line, condition, hit_condition);
++        debugger_.set_tick_handler([&](debugger&) {
++            if (wait_for_connect_) {
++                command_stream_.wait_for_connection();
++            }
++            command_stream_.poll();
++            });
++
++        command_stream_.on_connection = [=]() { connected_done(); };
++        command_stream_.on_data = [=](const std::string& data) {
++            execute_message(data);
++        };
++        command_stream_.on_close = [=]() { debugger_.unpause(); };
++    }
++    void send_pause_status() {
++        json::object pauseparam;
++        pauseparam["reason"] = json::value(debugger_.pause_reason());
++        send_notify(notify_message("paused", json::value(pauseparam)));
++    }
++    void connected_done() {
++        wait_for_connect_ = false;
++        json::object param;
++        param["protocol_version"] = json::value(LRDB_SERVER_PROTOCOL_VERSION);
++
++        json::object lua;
++        lua["version"] = json::value(LUA_VERSION);
++        lua["release"] = json::value("none");
++        lua["copyright"] = json::value(LUA_COPYRIGHT);
++
++        param["lua"] = json::value(lua);
++        send_notify(notify_message("connected", json::value(param)));
++    }
  
-     } else {
-@@ -190,6 +194,7 @@ class basic_server {
-         int line = static_cast<int>(
-             param.get<json::object>().at("line").get<double>());
-         debugger_.clear_breakpoints(source, line);
-+        std::cout << "removed breakpoint " << source << " line nr " << line << std::endl;
-       }
+-  bool send_message(const std::string& message) {
+-    return command_stream_.send_message(message);
+-  }
+-  void execute_message(const std::string& message) {
+-    json::value msg;
+-    std::string err = json::parse(msg, message);
+-    if (err.empty()) {
+-      if (message::is_request(msg)) {
+-        request_message request;
+-        message::parse(msg, request);
+-        execute_request(request);
+-      }
++    bool send_message(const std::string& message) {
++        return command_stream_.send_message(message);
++    }
++    void execute_message(const std::string& message) {
++        json::value msg;
++        std::string err = json::parse(msg, message);
++        if (err.empty()) {
++            if (message::is_request(msg)) {
++                request_message request;
++                message::parse(msg, request);
++                execute_request(request);
++            }
++        }
+     }
+-  }
+ 
+-  bool send_notify(const notify_message& message) {
+-    return send_message(message::serialize(message));
+-  }
+-  bool send_response(response_message& message) {
+-    return send_message(message::serialize(message));
+-  }
+-  bool step_request(response_message& response, const json::value&) {
+-    debugger_.step();
+-    return send_response(response);
+-  }
++    bool send_notify(const notify_message& message) {
++        return send_message(message::serialize(message));
++    }
++    bool send_response(response_message& message) {
++        return send_message(message::serialize(message));
++    }
++    bool step_request(response_message& response, const json::value&) {
++        debugger_.step();
++        return send_response(response);
++    }
+ 
+-  bool step_in_request(response_message& response, const json::value&) {
+-    debugger_.step_in();
+-    return send_response(response);
+-  }
+-  bool step_out_request(response_message& response, const json::value&) {
+-    debugger_.step_out();
+-    return send_response(response);
+-  }
+-  bool continue_request(response_message& response, const json::value&) {
+-    debugger_.unpause();
+-    return send_response(response);
+-  }
+-  bool pause_request(response_message& response, const json::value&) {
+-    debugger_.pause();
+-    return send_response(response);
+-  }
+-  bool add_breakpoint_request(response_message& response,
+-                              const json::value& param) {
+-    bool has_source = param.get("file").is<std::string>();
+-    bool has_condition = param.get("condition").is<std::string>();
+-    bool has_hit_condition = param.get("hit_condition").is<std::string>();
+-    bool has_line = param.get("line").is<double>();
+-    if (has_source && has_line) {
+-      std::string source =
+-          param.get<json::object>().at("file").get<std::string>();
+-      int line =
+-          static_cast<int>(param.get<json::object>().at("line").get<double>());
+-
+-      std::string condition;
+-      std::string hit_condition;
+-      if (has_condition) {
+-        condition =
+-            param.get<json::object>().at("condition").get<std::string>();
+-      }
+-      if (has_hit_condition) {
+-        hit_condition =
+-            param.get<json::object>().at("hit_condition").get<std::string>();
+-      }
+-      debugger_.add_breakpoint(source, line, condition, hit_condition);
++    bool step_in_request(response_message& response, const json::value&) {
++        debugger_.step_in();
++        return send_response(response);
++    }
++    bool step_out_request(response_message& response, const json::value&) {
++        debugger_.step_out();
++        return send_response(response);
++    }
++    bool continue_request(response_message& response, const json::value&) {
++        debugger_.unpause();
++        return send_response(response);
++    }
++    bool pause_request(response_message& response, const json::value&) {
++        debugger_.pause();
++        return send_response(response);
++    }
++    bool add_breakpoint_request(response_message& response,
++        const json::value& param) {
++        bool has_source = param.get("file").is<std::string>();
++        bool has_condition = param.get("condition").is<std::string>();
++        bool has_hit_condition = param.get("hit_condition").is<std::string>();
++        bool has_line = param.get("line").is<double>();
++        if (has_source && has_line) {
++            std::string source =
++                param.get<json::object>().at("file").get<std::string>();
++            int line =
++                static_cast<int>(param.get<json::object>().at("line").get<double>());
++
++            std::string condition;
++            std::string hit_condition;
++            if (has_condition) {
++                condition =
++                    param.get<json::object>().at("condition").get<std::string>();
++            }
++            if (has_hit_condition) {
++                hit_condition =
++                    param.get<json::object>().at("hit_condition").get<std::string>();
++            }
++
++            std::cout << "added breakpoint " << source << " line nr " << line << std::endl;
++
++            debugger_.add_breakpoint(source, line, condition, hit_condition);
+ 
+-    } else {
+-      response.error =
+-          response_error(response_error::InvalidParams, "invalid params");
++        }
++        else {
++            response.error =
++                response_error(response_error::InvalidParams, "invalid params");
++        }
++        return send_response(response);
+     }
+-    return send_response(response);
+-  }
+ 
+-  bool clear_breakpoints_request(response_message& response,
+-                                 const json::value& param) {
+-    bool has_source = param.get("file").is<std::string>();
+-    bool has_line = param.get("line").is<double>();
+-    if (!has_source) {
+-      debugger_.clear_breakpoints();
+-    } else {
+-      std::string source =
+-          param.get<json::object>().at("file").get<std::string>();
+-      if (!has_line) {
+-        debugger_.clear_breakpoints(source);
+-      } else {
+-        int line = static_cast<int>(
+-            param.get<json::object>().at("line").get<double>());
+-        debugger_.clear_breakpoints(source, line);
+-      }
++    bool clear_breakpoints_request(response_message& response,
++        const json::value& param) {
++        bool has_source = param.get("file").is<std::string>();
++        bool has_line = param.get("line").is<double>();
++        if (!has_source) {
++            debugger_.clear_breakpoints();
++        }
++        else {
++            std::string source =
++                param.get<json::object>().at("file").get<std::string>();
++            if (!has_line) {
++                debugger_.clear_breakpoints(source);
++            }
++            else {
++                int line = static_cast<int>(
++                    param.get<json::object>().at("line").get<double>());
++                debugger_.clear_breakpoints(source, line);
++                std::cout << "removed breakpoint " << source << " line nr " << line << std::endl;
++            }
++        }
++
++        return send_response(response);
      }
  
+-    return send_response(response);
+-  }
++    bool get_breakpoints_request(response_message& response, const json::value&) {
++        const debugger::line_breakpoint_type& breakpoints =
++            debugger_.line_breakpoints();
++
++        json::array res;
++        for (const auto& b : breakpoints) {
++            json::object br;
++            br["file"] = json::value(b.file);
++            if (!b.func.empty()) {
++                br["func"] = json::value(b.func);
++            }
++            br["line"] = json::value(double(b.line));
++            if (!b.condition.empty()) {
++                br["condition"] = json::value(b.condition);
++            }
++            br["hit_count"] = json::value(double(b.hit_count));
++            res.push_back(json::value(br));
++        }
+ 
+-  bool get_breakpoints_request(response_message& response, const json::value&) {
+-    const debugger::line_breakpoint_type& breakpoints =
+-        debugger_.line_breakpoints();
++        response.result = json::value(res);
+ 
+-    json::array res;
+-    for (const auto& b : breakpoints) {
+-      json::object br;
+-      br["file"] = json::value(b.file);
+-      if (!b.func.empty()) {
+-        br["func"] = json::value(b.func);
+-      }
+-      br["line"] = json::value(double(b.line));
+-      if (!b.condition.empty()) {
+-        br["condition"] = json::value(b.condition);
+-      }
+-      br["hit_count"] = json::value(double(b.hit_count));
+-      res.push_back(json::value(br));
++        return send_response(response);
+     }
+ 
+-    response.result = json::value(res);
+-
+-    return send_response(response);
+-  }
++#define LEVELS1	10	/* size of the first part of the stack */
++#define LEVELS2	8	/* size of the second part of the stack */
++
++    void get_traceback(lua_State* L, std::vector<lua_Debug>& result) {
++        int level = 0;
++        int firstpart = 1;  /* still before eventual `...' */
++        lua_Debug ar;
++        memset(&ar, 0, sizeof(ar));
++        while (lua_getstack(L, level++, &ar)) {
++            if (level > LEVELS1 && firstpart) {
++                /* no more than `LEVELS2' more levels? */
++                if (!lua_getstack(L, level + LEVELS2, &ar))
++                    level--;  /* keep going */
++                else {
++                    while (lua_getstack(L, level + LEVELS2, &ar))  /* find last levels */
++                        level++;
++                }
++                firstpart = 0;
++                continue;
++            }
++            lua_getinfo(L, "Snl", &ar);
++            result.push_back(ar);
++            memset(&ar, 0, sizeof(ar));
++        }
++    }
+ 
+   bool get_stacktrace_request(response_message& response, const json::value&) {
+-    auto callstack = debugger_.get_call_stack();
++    std::vector<lua_Debug> debuginfo;
++    get_traceback(debugger_.get_state(), debuginfo);
+     json::array res;
+-    for (auto& s : callstack) {
++    for (auto& s : debuginfo) {
+       json::object data;
+-      if (s.source()) {
+-        data["file"] = json::value(s.source());
++      if (s.source) {
++        data["file"] = json::value(s.source);
+       }
+-      const char* name = s.name();
++      const char* name = s.name;
+       if (!name || name[0] == '\0') {
+-        name = s.name();
++        name = s.name;
+       }
+       if (!name || name[0] == '\0') {
+-        name = s.namewhat();
++        name = s.namewhat;
+       }
+       if (!name || name[0] == '\0') {
+-        name = s.what();
++          name = s.what;
+       }
+       if (!name || name[0] == '\0') {
+-        name = s.source();
++          name = s.source;
+       }
+       data["func"] = json::value(name);
+-      data["line"] = json::value(double(s.currentline()));
+-      data["id"] = json::value(s.short_src());
++      data["line"] = json::value(double(s.currentline));
++      data["id"] = json::value(s.short_src);
+       res.push_back(json::value(data));
+     }
+     response.result = json::value(res);
 diff --git a/include/lrdb/command_stream/socket.hpp b/include/lrdb/command_stream/socket.hpp
 index a501af9..cc62c97 100644
 --- a/include/lrdb/command_stream/socket.hpp
@@ -55,7 +462,7 @@ index a501af9..cc62c97 100644
                                 }
                                 start_receive_commands();
 diff --git a/include/lrdb/debugger.hpp b/include/lrdb/debugger.hpp
-index e9e69fc..531c663 100644
+index e9e69fc..0a95ea0 100644
 --- a/include/lrdb/debugger.hpp
 +++ b/include/lrdb/debugger.hpp
 @@ -6,6 +6,8 @@
@@ -67,7 +474,32 @@ index e9e69fc..531c663 100644
  
  #include <cmath>
  
-@@ -820,7 +822,10 @@ class debugger {
+@@ -551,13 +553,14 @@ class debug_info {
+   friend class debugger;
+   friend class stack_info;
+ 
++public:
+   lua_State* state_;
+   lua_Debug* debug_;
+   std::string got_debug_;
+ };
+ 
+ /// @brief stack frame infomation data
+-class stack_info : private debug_info {
++class stack_info : public debug_info {
+  public:
+   stack_info(lua_State* L, int level) {
+     memset(&debug_var_, 0, sizeof(debug_var_));
+@@ -614,6 +617,8 @@ class debugger {
+   typedef std::function<void(debugger& debugger)> pause_handler_type;
+   typedef std::function<void(debugger& debugger)> tick_handler_type;
+ 
++  lua_State* get_state() { return state_; }
++
+   debugger() : state_(0), pause_(true), step_type_(STEP_ENTRY) {}
+   debugger(lua_State* L) : state_(0), pause_(true), step_type_(STEP_ENTRY) {
+     reset(L);
+@@ -820,7 +825,10 @@ class debugger {
        path2++;
      }
    }
@@ -79,7 +511,7 @@ index e9e69fc..531c663 100644
    breakpoint_info* search_breakpoints(debug_info& debuginfo) {
      if (line_breakpoints_.empty()) {
        return 0;
-@@ -829,15 +834,25 @@ class debugger {
+@@ -829,15 +837,25 @@ class debugger {
      for (line_breakpoint_type::iterator it = line_breakpoints_.begin();
           it != line_breakpoints_.end(); ++it) {
        if (currentline == it->line) {
@@ -111,3 +543,11 @@ index e9e69fc..531c663 100644
            return &(*it);
          }
        }
+@@ -964,6 +982,7 @@ class debugger {
+     STEP_ENTRY,
+   };
+ 
++
+   lua_State* state_;
+   bool pause_;
+   //  bool error_break_;
