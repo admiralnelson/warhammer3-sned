@@ -145,6 +145,84 @@ bool AttachParentConsole()
     return result;
 }
 
+std::vector<std::wstring> SplitString(std::wstring s, const std::wstring& delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::wstring token;
+    std::vector<std::wstring> res;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != std::wstring::npos) {
+        token = s.substr(pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back(token);
+    }
+
+    res.push_back(s.substr(pos_start));
+    return res;
+}
+
+std::wstring GetLastErrorStdStr()
+{
+    DWORD error = GetLastError();
+    if (error)
+    {
+        LPVOID lpMsgBuf;
+        DWORD bufLen = FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            error,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR)&lpMsgBuf,
+            0, NULL);
+        if (bufLen)
+        {
+            LPCSTR lpMsgStr = (LPCSTR)lpMsgBuf;
+            std::wstring result(lpMsgStr, lpMsgStr + bufLen);
+
+            LocalFree(lpMsgBuf);
+
+            return result;
+        }
+    }
+    return std::wstring();
+}
+
+bool LoadDll(const std::wstring& filename)
+{
+    std::wcout << "Loading DLL: " << filename << std::endl;
+    HMODULE  result = LoadLibrary(filename.c_str());
+    if (result == NULL)
+    {
+        std::wcout << L"Encountered error loading DLL: " << filename << L" reason: " << GetLastErrorStdStr() << std::endl;
+        return false;
+    }
+
+    std::wcout << "DLL should be loaded." << std::endl;
+    return true;
+}
+
+void AttemptToLoadAllDll()
+{
+    size_t bufSize = 65535; //Limit according to http://msdn.microsoft.com/en-us/library/ms683188.aspx
+    std::wstring buffer;
+    buffer.resize(bufSize);
+    bufSize = GetEnvironmentVariableW(L"LOADED_DLLS", &buffer[0], bufSize);
+    if (bufSize == 0) {
+        std::cout << "Failed to load DLL from env variable LOADED_DLLS" << std::endl;
+        return;
+    }
+    buffer.resize(bufSize);
+
+    //load the dlls
+    std::vector<std::wstring> dllFilenames = SplitString(buffer, L",");
+    for (auto const& i: dllFilenames)
+    {
+        LoadDll(i);
+    }
+
+}
+
 BOOL APIENTRY DllMain(HMODULE hModule,
     DWORD  ul_reason_for_call,
     LPVOID lpReserved
@@ -165,7 +243,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         if (bSpawnConsole)
         {
             CreateNewConsole();
-            SetConsoleTitle(L"Warhammer 2 SNED (Script Native Extension DLL) console");
+            SetConsoleTitle(L"Warhammer 3 SNED (Script Native Extension DLL) console");
         }
         else
         {
@@ -175,6 +253,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         std::cout << LicenseText << std::endl;
 
         SetupLoader();
+        AttemptToLoadAllDll();
 
         break;
     }

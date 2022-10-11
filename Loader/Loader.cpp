@@ -21,8 +21,11 @@
 
 //subject to changes, incomplete.
 
+
 #define EXPORT extern "C" __declspec(dllexport)
 #include <iostream>
+#include <regex>
+#include <vector>
 #include <Windows.h>
 #include "Detours.h"
 
@@ -33,17 +36,7 @@ L"for details please read the supplied LICENSE.txt in the supplied archive\n"
 L"This is free software, and you are welcome to redistribute it"
 L"under certain conditions.\n";
 
-std::wstring CharToWString(const char* text)
-{
-	const size_t size = strlen(text) + 1;
-	wchar_t* wText = new wchar_t[size];
-	mbstowcs(wText, text, size);
-	std::wstring ret(wText);
-	delete[] wText;
-	return ret;
-}
-
-int main(int argc, char* argv[])
+int wmain(int argc, wchar_t* argv[], wchar_t* envp[])
 {
     std::wcout << LicenseText << L"\n";
 
@@ -52,13 +45,32 @@ int main(int argc, char* argv[])
 	std::wstring argument;
 	for (int i = 1; i < argc; i++)
 	{
-		argument += CharToWString(argv[i]) + std::wstring(L" ");
+		argument += argv[i] + std::wstring(L" ");
 	}
 	std::wcout << L"argument passed: " << argument << L"\n\n";
 
-	argument = L"Warhammer3.exe " + argument;
+	std::wstring newArgument = argument;
+	
+	if (argument.find(L"dll") != std::wstring::npos) {
+		std::wregex reg(L"(dll=(.*dll))", std::regex_constants::extended);
+		std::wsmatch matches;
+		std::wstring::const_iterator textIterator = argument.cbegin();
+		while (!std::regex_search(textIterator, argument.cend(), matches, reg))
+		{}
+		if (matches.size() > 0)
+		{
+			std::wstring match = matches[2];
+			SetEnvironmentVariable(L"LOADED_DLLS", match.c_str());
+			newArgument = std::regex_replace(newArgument, reg, L"");
+		}
+		
+	}
 
-	std::wcout << L"argument that will be passed to the game: " << argument << L"\n\n";
+	
+
+	newArgument = L"Warhammer3.exe " + newArgument;
+
+	std::wcout << L"argument that will be passed to the game: " << newArgument << L"\n\n";
 
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
@@ -70,7 +82,7 @@ int main(int argc, char* argv[])
 	si.wShowWindow = SW_SHOW;
 
 	if (!DetourCreateProcessWithDllEx(L"Warhammer3.exe",
-		(LPWSTR)argument.data(), NULL, NULL, TRUE,
+		(LPWSTR)newArgument.data(), NULL, NULL, TRUE,
 		CREATE_NEW_PROCESS_GROUP,// | CREATE_SUSPENDED,
 		NULL, NULL, &si, &pi,
 		"libsnedloader.dll", NULL))
