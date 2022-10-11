@@ -25,7 +25,7 @@
 #define EXPORT extern "C" __declspec(dllexport)
 
 const char* LicenseText = ""
-"Warhammer 2 SNED (Script Native Extension DLL) Runtime Copyright(C) 2021 admiralnelson\n"
+"Warhammer 3 SNED (Script Native Extension DLL) Runtime Copyright(C) 2021 admiralnelson\n"
 "This program comes with ABSOLUTELY NO WARRANTY "
 "for details please read the supplied LICENSE.txt in the supplied archive\n"
 "This is free software, and you are welcome to redistribute it\n"
@@ -145,12 +145,14 @@ bool AttachParentConsole()
     return result;
 }
 
-std::vector<std::wstring> SplitString(std::wstring s, const std::wstring& delimiter) {
+std::vector<std::wstring> SplitString(std::wstring s, const std::wstring& delimiter) 
+{
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::wstring token;
     std::vector<std::wstring> res;
 
-    while ((pos_end = s.find(delimiter, pos_start)) != std::wstring::npos) {
+    while ((pos_end = s.find(delimiter, pos_start)) != std::wstring::npos) 
+    {
         token = s.substr(pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
         res.push_back(token);
@@ -239,7 +241,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         SetConsoleTitle(L"Warhammer 2 SNED (Script Native Extension DLL) console");
         freopen_s(&console_stream, "conout$", "w", stdout);*/
 
-        bool bSpawnConsole = std::getenv("WARHAMMER_2_SNED_INLINE_CONSOLE") != nullptr;
+        bool bSpawnConsole = std::getenv("WARHAMMER_3_SNED_INLINE_CONSOLE") != nullptr;
         if (bSpawnConsole)
         {
             CreateNewConsole();
