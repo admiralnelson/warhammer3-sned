@@ -47,3 +47,24 @@ int PrintWarning(lua_State* L)
 
     return 0;
 }
+
+int ShowMessageBox(lua_State* L) {
+    const char* message = luaL_checkstring(L, 1);
+    const char* title = luaL_checkstring(L, 2);
+    const char* icon = luaL_checkstring(L, 3);
+
+    UINT type = MB_OK;
+    if (strcmp(icon, "warning") == 0) {
+        type |= MB_ICONWARNING;
+    }
+    else if (strcmp(icon, "informational") == 0) {
+        type |= MB_ICONINFORMATION;
+    }
+    else if (strcmp(icon, "error") == 0) {
+        type |= MB_ICONERROR;
+    }
+
+    MessageBoxA(NULL, message, title, type);
+
+    return 0;
+}
