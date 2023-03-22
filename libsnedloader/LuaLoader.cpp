@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "LuaLoader.h"
 #include "Debugger.h"
+#include "../external/Detours/src/detours.h"
 
 //#include "lrdb/server.hpp"
 
@@ -233,6 +234,12 @@ static int LuaPrint(lua_State* L)
     return 0;
 }
 
+#define lua_lock(L)     ((void) 0) 
+#define api_checknelems(L, n)	api_check(L, (n) <= (L->top - L->base))
+#define api_check(l,e)		lua_assert(e)
+
+
+
 static uint64_t __fastcall hf_luaopen_package(lua_State* L)
 {
     //MessageBoxA(nullptr, "Lua has been patched sire.", "*Finger crossed*", MB_OK);
@@ -247,11 +254,31 @@ static uint64_t __fastcall hf_luaopen_package(lua_State* L)
     lua_register(L, "StartDebugger", StartDebugger);
     lua_register(L, "StopDebugger", StopDebugger);
     lua_register(L, "ExecuteLuaScriptDebug", ExecuteLuaScriptDebug);
+    lua_register(L, "ShowMessageBox", ShowMessageBox);
     lua_register(L, "print", LuaPrint);
     HWND currentWindow = GetActiveWindow();
     SetWindowText(currentWindow, L"Total Warhammer 3 Injected with SNED (Script Native Enchancer DLL)");
 
     return g_fp_luaopen_package(L);
+}
+
+static void __fastcall patch_luaG_runerror(lua_State* L, const char* fmt, ...) 
+{
+    va_list args;
+    va_start(args, fmt);
+    vprintf(fmt, args);
+    int length = vsnprintf(nullptr, 0, fmt, args);
+    char* buffer = new char[length + 1];
+    vsnprintf(buffer, length + 1, fmt, args);
+    std::string result(buffer);
+    delete[] buffer;
+    result = "Lua Runtime Error! \n" + result;
+    MessageBoxA(nullptr, result.c_str(), "Critical Lua Runtime Error", MB_ICONERROR);
+    va_end(args);
+
+    va_start(args, fmt);
+    g_luag_runerror(L, args, args);
+    va_end(args, fmt);
 }
 
 bool SetupLoader()
@@ -280,6 +307,20 @@ bool SetupLoader()
             printf("hopefully second entry point is not dud. ++ Finger Crossed ++");
             bAlternateMethod = true;
         }
+    }
+
+    void* luag_runerrorAddress = (void*)(GetModuleHandleA("Warhammer3.exe") + 0x4D8F60);
+    if (luag_runerrorAddress)
+    {
+        g_luag_runerror = (LUAG_RUNERROR)luag_runerrorAddress;
+        DetourTransactionBegin();
+        DetourUpdateThread(GetCurrentThread());
+        DetourAttach(&(PVOID&)luag_runerrorAddress, patch_luaG_runerror);
+        DetourTransactionCommit();
+    }
+    else 
+    {
+        printf("failed to acquire position of luaG_runerror.");
     }
 
     if (MH_CreateHook(luaopen_packageAddress, &hf_luaopen_package, reinterpret_cast<void**>(&g_fp_luaopen_package)) != MH_OK)
