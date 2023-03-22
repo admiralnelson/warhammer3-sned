@@ -21,6 +21,7 @@
 
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
+#include <dbghelp.h>
 
 #define EXPORT extern "C" __declspec(dllexport)
 
@@ -225,6 +226,52 @@ void AttemptToLoadAllDll()
 
 }
 
+const int MAX_STACK_FRAMES = 64;
+
+LONG CALLBACK VectoredHandler(PEXCEPTION_POINTERS ExceptionInfo)
+{
+    DWORD exceptionCode = ExceptionInfo->ExceptionRecord->ExceptionCode;
+    switch (exceptionCode) {
+    case EXCEPTION_ACCESS_VIOLATION:
+        printf("Access violation\n");
+        break;
+    case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+        printf("Array bounds exceeded\n");
+        break;
+    case EXCEPTION_BREAKPOINT:
+        printf("Breakpoint\n");
+        break;
+    default:
+        return EXCEPTION_CONTINUE_SEARCH;
+    }
+
+    MessageBoxA(0, "Exception Caught", "HARD CRASH OCCURRED", MB_OK | MB_ICONERROR);
+    void* stack[MAX_STACK_FRAMES];
+    USHORT frames = CaptureStackBackTrace(0, MAX_STACK_FRAMES, stack, NULL);
+
+    HANDLE process = GetCurrentProcess();
+    SymInitialize(process, NULL, TRUE);
+
+    SYMBOL_INFO* symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(char), 1);
+    if (!symbol) return EXCEPTION_CONTINUE_SEARCH;
+    
+    symbol->MaxNameLen = MAX_SYM_NAME;
+    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+    for (USHORT i = 0; i < frames; ++i) {
+        SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+        printf("%s\n", symbol->Name);
+    }
+
+    free(symbol);
+    SymCleanup(process);
+
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+
+
+
 BOOL APIENTRY DllMain(HMODULE hModule,
     DWORD  ul_reason_for_call,
     LPVOID lpReserved
@@ -256,7 +303,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
         SetupLoader();
         AttemptToLoadAllDll();
-
+        AddVectoredExceptionHandler(0, VectoredHandler);
         break;
     }
     case DLL_THREAD_ATTACH:

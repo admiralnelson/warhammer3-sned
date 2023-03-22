@@ -133,7 +133,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(SolutionDir)..\external\warhammer3\warhammer3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)..\external\warhammer3\warhammer3.lib;Dbghelp.lib;$(SolutionDir)..\external\Detours\lib.X64\detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
     </Link>
@@ -182,6 +182,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\external\Detours\vc\Detours.vcxproj">
+      <Project>{37489709-8054-4903-9c49-a79846049fc9}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\external\minhook_ProjectFiles\minhook.vcxproj">
       <Project>{5e77815c-9724-3881-8e07-668bd89c00c2}</Project>
     </ProjectReference>
