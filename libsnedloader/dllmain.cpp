@@ -25,6 +25,8 @@
 
 #define EXPORT extern "C" __declspec(dllexport)
 
+const int EXCEPTION_MSVCRT_CODE = 0xE06D7363;
+
 const char* LicenseText = ""
 "Warhammer 3 SNED (Script Native Extension DLL) Runtime Copyright(C) 2021 admiralnelson\n"
 "This program comes with ABSOLUTELY NO WARRANTY "
@@ -231,21 +233,24 @@ const int MAX_STACK_FRAMES = 64;
 LONG CALLBACK VectoredHandler(PEXCEPTION_POINTERS ExceptionInfo)
 {
     DWORD exceptionCode = ExceptionInfo->ExceptionRecord->ExceptionCode;
+    std::string msg = "";
     switch (exceptionCode) {
     case EXCEPTION_ACCESS_VIOLATION:
-        printf("Access violation\n");
+        msg = "Access violation\n";
         break;
     case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
-        printf("Array bounds exceeded\n");
+        msg = "Array bounds exceeded\n";
         break;
-    case EXCEPTION_BREAKPOINT:
-        printf("Breakpoint\n");
+    //case EXCEPTION_BREAKPOINT:
+    //    msg = "Breakpoint triggered\n";
+    //    break;
+    case EXCEPTION_MSVCRT_CODE:
+        msg = "MS Visual C++ exception was thrown\n";
         break;
     default:
         return EXCEPTION_CONTINUE_SEARCH;
     }
 
-    MessageBoxA(0, "Exception Caught", "HARD CRASH OCCURRED", MB_OK | MB_ICONERROR);
     void* stack[MAX_STACK_FRAMES];
     USHORT frames = CaptureStackBackTrace(0, MAX_STACK_FRAMES, stack, NULL);
 
@@ -265,6 +270,8 @@ LONG CALLBACK VectoredHandler(PEXCEPTION_POINTERS ExceptionInfo)
 
     free(symbol);
     SymCleanup(process);
+    std::string errorMessage = "Exception Caught" + msg;
+    MessageBoxA(0, errorMessage.c_str(), "Exception", MB_OK | MB_ICONERROR);
 
     return EXCEPTION_CONTINUE_SEARCH;
 }

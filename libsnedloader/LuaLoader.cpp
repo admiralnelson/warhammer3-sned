@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "psapi.h"
 #include "LuaLoader.h"
 #include "Debugger.h"
 #include "../external/Detours/src/detours.h"
@@ -262,6 +263,61 @@ static uint64_t __fastcall hf_luaopen_package(lua_State* L)
     return g_fp_luaopen_package(L);
 }
 
+std::vector<char*> SearchStringInMemory(const std::string& target) 
+{
+    std::vector<char*> result;
+    size_t targetSize = target.size();
+    HMODULE hModule = GetModuleHandle(NULL);
+    MODULEINFO moduleInfo;
+    GetModuleInformation(GetCurrentProcess(), hModule, &moduleInfo, sizeof(moduleInfo));
+    char* start = (char*)moduleInfo.lpBaseOfDll;
+    char* end = start + moduleInfo.SizeOfImage;
+    for (char* current = start; current + targetSize <= end; ++current) 
+    {
+        if (memcmp(current, target.c_str(), targetSize) == 0) 
+        {
+            result.push_back(current);
+        }
+    }
+    return result;
+}
+
+bool IsPointerValid(void* ptr) {
+    MEMORY_BASIC_INFORMATION memInfo;
+    if (VirtualQuery(ptr, &memInfo, sizeof(memInfo)) == 0) {
+        return false;
+    }
+    if (memInfo.State != MEM_COMMIT) {
+        return false;
+    }
+    return true;
+}
+
+
+static __int64 __fastcall patch_get_texture_from_vfs(__int64 thisPtr, int a2, CAString strPtr, int a4, int a5, bool a6)
+{
+    __int64 get_PointerToPointerToStringOffsetBy8 = strPtr + 8;
+    __int64 PointerToPointerString = (*(__int64*)get_PointerToPointerToStringOffsetBy8);
+    char* pointerString = (char*)PointerToPointerString;
+    /*if (IsPointerValid(pointerString))
+    {
+        printf("VIRTUAL FILESYSTEM TEXTURE: attempting to load file: %s \n", pointerString);
+    }*/
+    return g_get_texture_from_vfs(thisPtr, a2, strPtr, a4, a5, a6);
+}
+
+static __int64 __fastcall patch_get_file_from_vfs(__int64 thisPtr, CAString strPtr)
+{
+    __int64 get_PointerToPointerToStringOffsetBy8 = strPtr + 8;
+    __int64 PointerToPointerString = (*(__int64*)get_PointerToPointerToStringOffsetBy8);
+    char* pointerString = (char*)PointerToPointerString;
+    /*if (IsPointerValid(pointerString))
+    {
+        printf("VIRTUAL FILESYSTEM: attempting to load file: %s \n", pointerString);
+    }*/
+    return g_get_file_from_vfs(thisPtr, strPtr);
+}
+
 static void __fastcall patch_luaG_runerror(lua_State* L, const char* fmt, ...) 
 {
     va_list args;
@@ -281,8 +337,39 @@ static void __fastcall patch_luaG_runerror(lua_State* L, const char* fmt, ...)
     va_end(args, fmt);
 }
 
+void* FindMemoryByPattern(const char* pattern) {
+    const char* p = pattern;
+    HMODULE hModule = GetModuleHandle(NULL);
+    MODULEINFO moduleInfo;
+    GetModuleInformation(GetCurrentProcess(), hModule, &moduleInfo, sizeof(moduleInfo));
+    unsigned char* start = (unsigned char*)moduleInfo.lpBaseOfDll;
+    unsigned char* end = start + moduleInfo.SizeOfImage;
+    size_t patternLength = strlen(pattern);
+    unsigned char* current = start;
+    while (current < end) {
+        bool found = true;
+        for (size_t i = 0; i < patternLength; i += 3) {
+            if (p[i] == '?' && p[i + 1] == '?') {
+                continue;
+            }
+            int value = 0;
+            sscanf(&p[i], "%x", &value);
+            if (*(current + i / 3) != value) {
+                found = false;
+                break;
+            }
+        }
+        if (found) {
+            return current;
+        }
+        current++;
+    }
+    return NULL;
+}
+
 bool SetupLoader()
 {
+    system("pause");
     if (MH_Initialize() != MH_OK)
     {
         std::cout << "Failed to initialize hook library." << std::endl;
@@ -309,19 +396,59 @@ bool SetupLoader()
         }
     }
 
-    void* luag_runerrorAddress = (void*)(GetModuleHandleA("Warhammer3.exe") + 0x4D8F60);
-    if (luag_runerrorAddress)
-    {
-        g_luag_runerror = (LUAG_RUNERROR)luag_runerrorAddress;
-        DetourTransactionBegin();
-        DetourUpdateThread(GetCurrentThread());
-        DetourAttach(&(PVOID&)luag_runerrorAddress, patch_luaG_runerror);
-        DetourTransactionCommit();
-    }
-    else 
-    {
-        printf("failed to acquire position of luaG_runerror.");
-    }
+    //void* ca_string_to_char_ptr_thunk = FindMemoryByPattern("E9 0B F3 FF FF CC CC CC CC CC CC CC CC CC CC CC");
+    //if (!ca_string_to_char_ptr_thunk)
+    //{
+    //    printf("failed to acquire position of ca_string_to_char_ptr_thunk.");
+    //}
+    //else
+    //{
+    //    g_ca_string_to_char_thunk = (CA_STRING_C_STR)ca_string_to_char_ptr_thunk;
+    //}
+
+    //void* ca_string_to_char_ptr = FindMemoryByPattern("40 53 48 83 EC 30 48 C7 44 24 20 FE FF FF FF 48 8B 59 08 48 8D 05 B4 85 E3 03 48 3B D8 74 43 48 8B C3 48 B9 00 00 00 00 00 00 00 F0 48 23 C1 48 B9 00 00 00 00 00 00 00 80 48 3B C1 74 24 48 85");
+    //if (!ca_string_to_char_ptr)
+    //{
+    //    printf("failed to acquire position of ca_string_to_char_ptr.");
+    //}
+    //else
+    //{
+    //    g_ca_string_to_char = (CA_STRING_C_STR)ca_string_to_char_ptr;
+    //}
+
+    //void* get_texture_from_vfs = FindMemoryByPattern("48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 48 89 7C 24 20 41 54 41 56 41 57 48 81 EC A0 00 00 00 48 8D 05 60 80 88 02 44 8B F2 48 89 01 48 8B F9 89 51 20 48 8D 05 6D 00 86 02 48 89 41 08 45 33 E4 4C 89 61 18 33 D2 48 83 C1 28 41 8B F1 49 8B E8 E8 49 58 EC FF 44 0F B6 BC 24 E8 00 00 00 48 8D 05 91 45 8A 02 48 89 07 48 8D 05 5F 46 8A");
+    //if(!get_texture_from_vfs)
+    //{
+    //    printf("failed to acquire position of get_texture_from_vfs.");
+    //}
+    //else
+    //{
+    //    g_get_texture_from_vfs = (GET_TEXTURE_FROM_VFS)get_texture_from_vfs;
+    //}
+
+    //void* get_file_from_vfs = FindMemoryByPattern("41 56 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 50 48 89 6C 24 58 48 89 74 24 60 48 89");
+    //if (!get_file_from_vfs)
+    //{
+    //    printf("failed to acquire position of get_file_from_vfs.");
+    //}
+    //else
+    //{
+    //    g_get_file_from_vfs = (GET_FILE_FROM_VFS)get_file_from_vfs;
+    //}
+
+    //if (MH_CreateHook(get_texture_from_vfs, &patch_get_texture_from_vfs, reinterpret_cast<void**>(&g_get_texture_from_vfs)) != MH_OK)
+    //{
+    //    std::cout << "Failed to create `get_texture_from_vfs` hook." << std::endl;
+
+    //    return false;
+    //}
+
+    //if (MH_CreateHook(get_file_from_vfs, &patch_get_file_from_vfs, reinterpret_cast<void**>(&g_get_file_from_vfs)) != MH_OK)
+    //{
+    //    std::cout << "Failed to create `get_file_from_vfs` hook." << std::endl;
+
+    //    return false;
+    //}
 
     if (MH_CreateHook(luaopen_packageAddress, &hf_luaopen_package, reinterpret_cast<void**>(&g_fp_luaopen_package)) != MH_OK)
     {
