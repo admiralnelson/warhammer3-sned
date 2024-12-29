@@ -196,35 +196,35 @@ static int LuaPrint(lua_State* L)
             {
                 std::cout << lua_tonumber(L, i);
             }
-            if (lua_isboolean(L, i))
+            else if (lua_isboolean(L, i))
             {
                 std::cout << lua_toboolean(L, i) ? "true" : "false";
             }
-            if (lua_isfunction(L, i))
+            else if (lua_isfunction(L, i))
             {
                 std::cout << "<lua function located at: " << std::hex << lua_topointer(L, i) << ">";
             }
-            if (lua_isuserdata(L, i))
+            else if (lua_isuserdata(L, i))
             {
                 std::cout << "<lua userdata located at: " << std::hex << lua_touserdata(L, i) << ">";
             }
-            if (lua_istable(L, i))
+            else if (lua_istable(L, i))
             {
                 std::cout << "<lua table located at: " << std::hex << lua_topointer(L, i) << ">";
             }
-            if (lua_iscfunction(L, i))
+            else if (lua_iscfunction(L, i))
             {
                 std::cout << "<lua native function located at: " << std::hex << lua_topointer(L, i) << ">";
             }
-            if (lua_islightuserdata(L, i))
+            else if (lua_islightuserdata(L, i))
             {
                 std::cout << "<lua lightuserdata located at: " << lua_topointer(L, i) << ">";
             }
-            if (lua_isthread(L, i))
+            else if (lua_isthread(L, i))
             {
                 std::cout << "<lua thread located at: " << lua_topointer(L, i) << ">";
             }
-            if (lua_isnoneornil(L, i))
+            else if (lua_isnoneornil(L, i))
             {
                 std::cout << "nil";
             }

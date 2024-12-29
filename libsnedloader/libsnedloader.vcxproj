@@ -133,7 +133,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(SolutionDir)..\external\warhammer3\warhammer3.lib;Dbghelp.lib;$(SolutionDir)..\external\Detours\lib.X64\detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)..\external\warhammer3\warhammer3.lib;Dbghelp.lib;$(SolutionDir)..\external\Detours\lib.X64\detours.lib;dbghelp;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
     </Link>

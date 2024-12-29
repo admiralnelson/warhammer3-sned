@@ -22,6 +22,8 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 #include <dbghelp.h>
+#pragma comment(lib, "Dbghelp.lib")
+
 
 #define EXPORT extern "C" __declspec(dllexport)
 
@@ -229,11 +231,19 @@ void AttemptToLoadAllDll()
 }
 
 const int MAX_STACK_FRAMES = 64;
-
 LONG CALLBACK VectoredHandler(PEXCEPTION_POINTERS ExceptionInfo)
 {
+    // Get the address of the VectoredHandler function
+    void* vectoredHandlerAddress = (void*)&VectoredHandler;
+
+    // Check if the exception is coming from the same function
+    if (ExceptionInfo->ContextRecord->Rip == (DWORD64)vectoredHandlerAddress) {
+        return EXCEPTION_CONTINUE_SEARCH;
+    }
+
     DWORD exceptionCode = ExceptionInfo->ExceptionRecord->ExceptionCode;
     std::string msg = "";
+
     switch (exceptionCode) {
     case EXCEPTION_ACCESS_VIOLATION:
         msg = "Access violation\n";
@@ -241,9 +251,6 @@ LONG CALLBACK VectoredHandler(PEXCEPTION_POINTERS ExceptionInfo)
     case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
         msg = "Array bounds exceeded\n";
         break;
-    //case EXCEPTION_BREAKPOINT:
-    //    msg = "Breakpoint triggered\n";
-    //    break;
     case EXCEPTION_MSVCRT_CODE:
         msg = "MS Visual C++ exception was thrown\n";
         break;
@@ -258,25 +265,63 @@ LONG CALLBACK VectoredHandler(PEXCEPTION_POINTERS ExceptionInfo)
     SymInitialize(process, NULL, TRUE);
 
     SYMBOL_INFO* symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(char), 1);
-    if (!symbol) return EXCEPTION_CONTINUE_SEARCH;
-    
+    if (!symbol) {
+        return EXCEPTION_CONTINUE_SEARCH;
+    }
+
     symbol->MaxNameLen = MAX_SYM_NAME;
     symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
 
     for (USHORT i = 0; i < frames; ++i) {
         SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
-        printf("%s\n", symbol->Name);
+
+        // Get the module base address
+        DWORD64 moduleBase = SymGetModuleBase64(process, (DWORD64)(stack[i]));
+        char moduleName[MAX_PATH] = "<unknown>";
+
+        // Get the module name
+        if (moduleBase) {
+            GetModuleFileNameA((HINSTANCE)moduleBase, moduleName, MAX_PATH);
+        }
+
+        std::cout << "Frame " << i << ": " << symbol->Name << " (" << moduleName << ")" << std::endl;
     }
 
     free(symbol);
     SymCleanup(process);
-    std::string errorMessage = "Exception Caught" + msg;
+
+    if (exceptionCode == EXCEPTION_MSVCRT_CODE) {
+        DWORD numberOfParameters = ExceptionInfo->ExceptionRecord->NumberParameters;
+        std::cout << "Number of parameters: " << numberOfParameters << std::endl;
+        for (DWORD i = 0; i < numberOfParameters; ++i) {
+            std::cout << "Parameter " << i << ": " << ExceptionInfo->ExceptionRecord->ExceptionInformation[i] << std::endl;
+        }
+
+        // Extract the exception object from the parameters
+        void* exceptionObject = reinterpret_cast<void*>(ExceptionInfo->ExceptionRecord->ExceptionInformation[1]);
+        try {
+            // Cast the void pointer to std::exception pointer
+            std::exception* uknownException = static_cast<std::exception*>(exceptionObject);
+            std::exception* ex = dynamic_cast<std::exception*>(uknownException);
+            if (ex) {
+                // Call the what() method
+                //std::cout << "Exception Object is " << typeid(*ex).raw_name() << std::endl;
+                //msg = typeid(*ex).raw_name() + std::string("  ") + msg;
+            }
+            else {
+                std::cout << "Invalid exception pointer" << std::endl;
+            }
+        }
+        catch (...) {
+            std::cout << "Unknown exception caught" << std::endl;
+        }
+    }
+
+    std::string errorMessage = "Exception Caught: " + msg;
     MessageBoxA(0, errorMessage.c_str(), "Exception", MB_OK | MB_ICONERROR);
 
     return EXCEPTION_CONTINUE_SEARCH;
 }
-
-
 
 
 BOOL APIENTRY DllMain(HMODULE hModule,
@@ -310,7 +355,11 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
         SetupLoader();
         AttemptToLoadAllDll();
-        AddVectoredExceptionHandler(0, VectoredHandler);
+        if (std::getenv("MSGBOX_ON_ERROR") != nullptr)
+        {
+            AddVectoredExceptionHandler(0, VectoredHandler);
+        }
+        break;
         break;
     }
     case DLL_THREAD_ATTACH:
