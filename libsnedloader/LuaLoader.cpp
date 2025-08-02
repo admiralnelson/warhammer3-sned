@@ -2,6 +2,7 @@
 #include "psapi.h"
 #include "LuaLoader.h"
 #include "Debugger.h"
+#include "queue"
 #include "../external/Detours/src/detours.h"
 
 //#include "lrdb/server.hpp"
@@ -29,6 +30,10 @@
 /* error codes for ll_loadfunc */
 #define ERRLIB		1
 #define ERRFUNC		2
+
+typedef DWORD(WINAPI* GetFinalPathNameByHandleW_t)(HANDLE, LPWSTR, DWORD, DWORD);
+static GetFinalPathNameByHandleW_t original_GetFinalPathNameByHandleW = nullptr;
+
 
 static void pusherror(lua_State* L) {
     int error = GetLastError();
@@ -294,30 +299,6 @@ bool IsPointerValid(void* ptr) {
 }
 
 
-static __int64 __fastcall patch_get_texture_from_vfs(__int64 thisPtr, int a2, CAString strPtr, int a4, int a5, bool a6)
-{
-    __int64 get_PointerToPointerToStringOffsetBy8 = strPtr + 8;
-    __int64 PointerToPointerString = (*(__int64*)get_PointerToPointerToStringOffsetBy8);
-    char* pointerString = (char*)PointerToPointerString;
-    /*if (IsPointerValid(pointerString))
-    {
-        printf("VIRTUAL FILESYSTEM TEXTURE: attempting to load file: %s \n", pointerString);
-    }*/
-    return g_get_texture_from_vfs(thisPtr, a2, strPtr, a4, a5, a6);
-}
-
-static __int64 __fastcall patch_get_file_from_vfs(__int64 thisPtr, CAString strPtr)
-{
-    __int64 get_PointerToPointerToStringOffsetBy8 = strPtr + 8;
-    __int64 PointerToPointerString = (*(__int64*)get_PointerToPointerToStringOffsetBy8);
-    char* pointerString = (char*)PointerToPointerString;
-    /*if (IsPointerValid(pointerString))
-    {
-        printf("VIRTUAL FILESYSTEM: attempting to load file: %s \n", pointerString);
-    }*/
-    return g_get_file_from_vfs(thisPtr, strPtr);
-}
-
 static void __fastcall patch_luaG_runerror(lua_State* L, const char* fmt, ...) 
 {
     va_list args;
@@ -365,6 +346,230 @@ void* FindMemoryByPattern(const char* pattern) {
         current++;
     }
     return NULL;
+}
+
+typedef FILE* (*fopen_t)(const char* filename, const char* mode);
+fopen_t original_fopen = nullptr;
+
+FILE* FopenHook(const char* filename, const char* mode) 
+{
+    // Log the file operation
+    std::cout << "[SNED] fopen called with filename: " << filename << " and mode: " << mode << std::endl;
+
+    // Call the original fopen function
+    return original_fopen(filename, mode);
+}
+
+typedef HANDLE(WINAPI* CreateFileW_t)(
+    LPCWSTR lpFileName,
+    DWORD dwDesiredAccess,
+    DWORD dwShareMode,
+    LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    DWORD dwCreationDisposition,
+    DWORD dwFlagsAndAttributes,
+    HANDLE hTemplateFile
+    );
+CreateFileW_t original_CreateFileW = nullptr;
+
+HANDLE WINAPI CreateFileW_Hook(
+    LPCWSTR lpFileName,
+    DWORD dwDesiredAccess,
+    DWORD dwShareMode,
+    LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    DWORD dwCreationDisposition,
+    DWORD dwFlagsAndAttributes,
+    HANDLE hTemplateFile
+) {
+    std::wcout << L"[SNED] CreateFileW called with filename: " << lpFileName << std::endl;
+    return original_CreateFileW(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+}
+
+typedef BOOL(WINAPI* ReadFile_t)(
+    HANDLE hFile,
+    LPVOID lpBuffer,
+    DWORD nNumberOfBytesToRead,
+    LPDWORD lpNumberOfBytesRead,
+    LPOVERLAPPED lpOverlapped
+    );
+ReadFile_t original_ReadFile = nullptr;
+
+std::string WideStringToUtf8(const std::wstring& wstr) {
+    if (wstr.empty()) return std::string();
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+    std::string strTo(size_needed, 0);
+    WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
+    return strTo;
+}
+
+bool IsItCalledFromWarhammer3Exe() 
+{
+    // Get the module handle of the caller
+    HMODULE hModule = NULL;
+    GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)_ReturnAddress(), &hModule);
+
+    // Get the module file name
+    WCHAR moduleFileName[MAX_PATH];
+    GetModuleFileNameW(hModule, moduleFileName, MAX_PATH);
+
+    // Check if the call originates from Warhammer3.exe
+    std::wstring warhammerModuleName = L"Warhammer3.exe";
+
+	return wcsstr(moduleFileName, warhammerModuleName.c_str()) != NULL;
+}
+
+DWORD WINAPI GetFinalPathNameByHandleW_Hook(HANDLE hFile, LPWSTR lpszFilePath, DWORD cchFilePath, DWORD dwFlags) {
+    return original_GetFinalPathNameByHandleW(hFile, lpszFilePath, cchFilePath, dwFlags);
+}
+
+static std::mutex logMutex;
+
+static int counter = 0;
+
+class ThreadPool {
+public:
+    ThreadPool(size_t numThreads);
+    ~ThreadPool();
+    void enqueue(std::function<void()> task);
+
+private:
+    std::vector<std::thread> workers;
+    std::queue<std::function<void()>> tasks;
+    std::mutex queueMutex;
+    std::condition_variable condition;
+    std::atomic<bool> stop;
+};
+
+ThreadPool::ThreadPool(size_t numThreads) : stop(false) {
+    for (size_t i = 0; i < numThreads; ++i) {
+        workers.emplace_back([this] {
+            while (true) {
+                std::function<void()> task;
+                {
+                    std::unique_lock<std::mutex> lock(this->queueMutex);
+                    this->condition.wait(lock, [this] { return this->stop || !this->tasks.empty(); });
+                    if (this->stop && this->tasks.empty()) return;
+                    task = std::move(this->tasks.front());
+                    this->tasks.pop();
+                }
+                task();
+            }
+            });
+    }
+}
+
+ThreadPool::~ThreadPool() {
+    stop = true;
+    condition.notify_all();
+    for (std::thread& worker : workers) {
+        worker.join();
+    }
+}
+
+void ThreadPool::enqueue(std::function<void()> task) {
+    {
+        std::unique_lock<std::mutex> lock(queueMutex);
+        tasks.push(std::move(task));
+    }
+    condition.notify_one();
+}
+
+// Global thread pool instance
+ThreadPool threadPool(4);
+
+BOOL WINAPI ReadFile_Hook(
+    HANDLE hFile,
+    LPVOID lpBuffer,
+    DWORD nNumberOfBytesToRead,
+    LPDWORD lpNumberOfBytesRead,
+    LPOVERLAPPED lpOverlapped
+) 
+{
+    BOOL result = original_ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
+
+    // Defer the GetFinalPathNameByHandleW operation to another thread
+    threadPool.enqueue([hFile, nNumberOfBytesToRead]() {
+        const int maxPath = MAX_PATH;
+        WCHAR filePath[maxPath];
+        bool attemptToFindTheFile = false;
+        if (hFile != INVALID_HANDLE_VALUE)
+        {
+            attemptToFindTheFile = GetFinalPathNameByHandleW(hFile, filePath, maxPath, FILE_NAME_NORMALIZED) != 0;
+        }
+
+        std::lock_guard<std::mutex> guard(logMutex); // Lock the mutex for thread-safe logging
+        if (attemptToFindTheFile) {
+            std::string path = WideStringToUtf8(filePath);
+            std::cout << "[SNED] ReadFile called with handle: " << hFile << " on path " << path << " and bytes to read: " << nNumberOfBytesToRead << std::endl;
+        }
+    });
+
+
+	return result;
+
+  
+}
+
+bool is_probably_SSO_string(const char* ptr) {
+    if (!ptr) return false;
+
+	bool lengthIsNotLessThan15 = strnlen_s(ptr, 15) >= 15;
+	if (lengthIsNotLessThan15) return false; // SSO strings are expected to be short
+
+    size_t n_printable = 0;
+    for (size_t i = 0; i < 15; ++i) {
+        unsigned char c = static_cast<unsigned char>(ptr[i]);
+        if (c == '\0') {
+            // Null terminator found
+            return (n_printable >= 2); // Require at least 2 printable chars before null
+        }
+        if (!isprint(c) && !isspace(c)) {
+            // Non-printable and not whitespace
+            return false;
+        }
+        ++n_printable;
+    }
+    // No null terminator found within max_len
+    return false;
+}
+
+const char* viewCAString(const CAString* s) {
+    if(is_probably_SSO_string((const char*)s)) {
+        return (const char*)s;
+	}
+
+    if (!s || s->length <= 0) return nullptr;
+    if (s->capacity <= 15) {
+        return s->sso_buffer;
+    }
+    else {
+        return s->heap_buffer;
+    }
+}
+
+static void* __fastcall VFS_resolve_path_entry_patch(void* path)
+{
+    //PrintCAString(*path);
+    void* res = g_get_file_entry_from_vfs(path);
+    //if (is_probably_string((char*) res)) {
+    //    std::cout << "[SNED] VFS_resolve_path_entry called with path: " << res << std::endl;
+    //}
+    //else {
+	CAString* str = (CAString*)res;
+	const char* cString = viewCAString(str);
+    std::cout << "[SNED] STRUCT VFS_resolve_path_entry called with path: " << cString << std::endl;
+    
+    return res;
+}
+
+typedef BOOL(WINAPI* CloseHandle_t)(HANDLE hObject);
+CloseHandle_t original_CloseHandle = nullptr;
+
+BOOL WINAPI CloseHandle_Hook(HANDLE hObject) 
+{
+    bool result = original_CloseHandle(hObject);
+    std::cout << "[SNED] CloseHandle called with handle: " << hObject <<  std::endl;
+
+    return result;
 }
 
 bool SetupLoader()
@@ -449,6 +654,31 @@ bool SetupLoader()
 
     //    return false;
     //}
+    
+    void* VFS_resolve_path_entry = FindMemoryByPattern("48 89 5c 24 10 48 89 6c 24 18 48 89 74 24 20 57 41 56 41 57 48 83 ec 40 48 8b f1 48 8b 51 08 48 8b c2 49 be 00 00 00 00 00 00 00 f0");
+    if (!VFS_resolve_path_entry)
+    {
+        printf("failed to acquire position of VFS_resolve_path_entry.");
+    }
+    else
+    {
+        g_get_file_entry_from_vfs = (GET_FILE_ENTRY_FROM_VFS)VFS_resolve_path_entry;
+    }
+
+
+
+    HMODULE hKernel32 = GetModuleHandleA("kernel32.dll");
+    if (!hKernel32) {
+        std::cerr << "Failed to get handle to kernel32.dll." << std::endl;
+        return false;
+    }
+
+    original_ReadFile = (ReadFile_t)GetProcAddress(hKernel32, "ReadFile");
+    if (!original_ReadFile) {
+        std::cerr << "Failed to get address of ReadFile." << std::endl;
+        return false;
+    }
+
 
     if (MH_CreateHook(luaopen_packageAddress, &hf_luaopen_package, reinterpret_cast<void**>(&g_fp_luaopen_package)) != MH_OK)
     {
@@ -456,6 +686,57 @@ bool SetupLoader()
 
         return false;
     }
+
+    if (MH_CreateHook(&fopen, &FopenHook, reinterpret_cast<void**>(&original_fopen)) != MH_OK) 
+    {
+        std::cerr << "Failed to create fopen hook." << std::endl;
+        return false;
+    }
+
+    if (DetourTransactionBegin() != NO_ERROR)
+    {
+        std::cout << "Failed to begin Detour transaction." << std::endl;
+        return false;
+    }
+
+    if (DetourUpdateThread(GetCurrentThread()) != NO_ERROR)
+    {
+        std::cout << "Failed to update Detour thread." << std::endl;
+        return false;
+    }
+
+    // Attach the ReadFile hook
+    //if (DetourAttach(&(PVOID&)original_ReadFile, ReadFile_Hook) != NO_ERROR)
+    //{
+    //    std::cerr << "Failed to attach ReadFile hook." << std::endl;
+    //    return false;
+    //}
+
+    if (DetourAttach(&(PVOID&)g_get_file_entry_from_vfs, VFS_resolve_path_entry_patch) != NO_ERROR) {
+        std::cerr << "Failed to create VFS_resolve_path_entry_patch hook." << std::endl;
+        return false;
+    }
+    else {
+        void* p = VFS_resolve_path_entry;
+        //p = static_cast<char*>(p) + 5;
+		//g_get_file_entry_from_vfs = (GET_FILE_ENTRY_FROM_VFS)p;
+    }
+
+    if (DetourTransactionCommit() != NO_ERROR)
+    {
+        std::cout << "Failed to commit Detour transaction." << std::endl;
+        return false;
+    }
+
+
+
+
+    //// Create a hook for CloseHandle
+    //if (MH_CreateHook(&CloseHandle, &CloseHandle_Hook, reinterpret_cast<void**>(&original_CloseHandle)) != MH_OK) {
+    //    std::cerr << "Failed to create CloseHandle hook." << std::endl;
+    //    return false;
+    //}
+
 
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
     {

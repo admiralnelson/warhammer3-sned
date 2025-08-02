@@ -23,6 +23,7 @@
 #include "pch.h"
 #include <dbghelp.h>
 #pragma comment(lib, "Dbghelp.lib")
+#pragma comment(lib, "D:\\dev\\warhammer3-sned\\external\\Detours\\lib.X64\\detours.lib")
 
 
 #define EXPORT extern "C" __declspec(dllexport)
