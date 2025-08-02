@@ -546,6 +546,46 @@ const char* viewCAString(const CAString* s) {
     }
 }
 
+static bool runOnce = false;
+static void* get_static_config()
+{
+    if (runOnce) {
+        return nullptr; // Prevent multiple calls
+    }
+    runOnce = true;
+
+    void* baseWarhammer3 = GetModuleHandleA("Warhammer3.exe");
+    // (1) Address of the global pointer (DAT_1444f6e20)
+    void* configPointerLocation = (void*)((uintptr_t)baseWarhammer3 + 0x44f6e20);
+    // (2) Dereference to get the actual struct pointer
+    void* configStruct = configPointerLocation;
+    std::cout << "[SNED] Config struct pointer: " << configStruct << std::endl;
+
+    void* flag_addr = (void*)((uintptr_t)configStruct + 0x5ea4);
+
+    DWORD oldProtect;
+    VirtualProtect(flag_addr, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+
+    // Step 5: Set bit 0x40 to enable logging
+    uint8_t* ptrFlag = (uint8_t*)flag_addr;
+    *ptrFlag |= 0x40;
+
+    VirtualProtect(flag_addr, 1, oldProtect, &oldProtect);
+
+
+    // (3) Address of the logging flag
+    uint8_t* loggingFlag = nullptr;
+    if (configStruct) {
+        loggingFlag = (uint8_t*)((uintptr_t)configStruct + 0x5ea4);
+        std::cout << "[SNED] Logging flag address: " << (void*)loggingFlag << std::endl;
+        std::cout << "[SNED] Logging flag value: " << std::hex << (int)*loggingFlag << std::endl;
+    }
+    else {
+        std::cout << "[SNED] Config struct pointer is null!" << std::endl;
+    }
+    return loggingFlag;
+}
+
 static void* __fastcall VFS_resolve_path_entry_patch(void* path)
 {
     //PrintCAString(*path);
@@ -554,12 +594,35 @@ static void* __fastcall VFS_resolve_path_entry_patch(void* path)
     //    std::cout << "[SNED] VFS_resolve_path_entry called with path: " << res << std::endl;
     //}
     //else {
+    get_static_config();
 	CAString* str = (CAString*)res;
 	const char* cString = viewCAString(str);
     std::cout << "[SNED] STRUCT VFS_resolve_path_entry called with path: " << cString << std::endl;
     
     return res;
 }
+
+static void __fastcall hook_logging(char* s, ...)
+{
+    va_list args;
+    va_start(args, s);
+
+    // You can forward the call to the original, or do your own thing
+    // For example, print the format string and the first int:
+    vprintf(s, args);
+
+    va_end(args);
+
+    // If you want to call the real function:
+    // Call original with varargs forwarding
+    if (g_ca_logging) {
+        va_start(args, s);
+        g_ca_logging(s, args); // WRONG: see below!
+        va_end(args);
+    }
+}
+
+
 
 typedef BOOL(WINAPI* CloseHandle_t)(HANDLE hObject);
 CloseHandle_t original_CloseHandle = nullptr;
@@ -665,6 +728,15 @@ bool SetupLoader()
         g_get_file_entry_from_vfs = (GET_FILE_ENTRY_FROM_VFS)VFS_resolve_path_entry;
     }
 
+    void* ca_logging = FindMemoryByPattern("48 89 4c 24 08 48 89 54 24 10 4c 89 44 24 18 4c 89 4c 24 20 48 83 ec 28 48 8d 54 24 38");
+    if (!ca_logging)
+    {
+        printf("failed to acquire position of ca_logging .");
+    }
+    else
+    {
+        g_ca_logging = (CA_LOGGING)ca_logging;
+    }
 
 
     HMODULE hKernel32 = GetModuleHandleA("kernel32.dll");
@@ -716,10 +788,10 @@ bool SetupLoader()
         std::cerr << "Failed to create VFS_resolve_path_entry_patch hook." << std::endl;
         return false;
     }
-    else {
-        void* p = VFS_resolve_path_entry;
-        //p = static_cast<char*>(p) + 5;
-		//g_get_file_entry_from_vfs = (GET_FILE_ENTRY_FROM_VFS)p;
+
+    if (DetourAttach(&(PVOID&)g_ca_logging, hook_logging) != NO_ERROR) {
+        std::cerr << "Failed to create g_ca_logging hook." << std::endl;
+        return false;
     }
 
     if (DetourTransactionCommit() != NO_ERROR)
