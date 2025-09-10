@@ -546,6 +546,43 @@ const char* viewCAString(const CAString* s) {
     }
 }
 
+void replaceCAString(CAString* s, const char* cString) {
+    const int maxCount = strnlen_s(cString, 1024 * 1024);
+	
+	char* newBuffer = nullptr;
+    if (maxCount <= 15) {
+		s->length = maxCount;
+        s->capacity = 15; // SSO buffer
+        newBuffer = new char[s->capacity];
+        memset(newBuffer, 0, s->capacity); // Initialize the new buffer
+		memcpy(s->sso_buffer, cString, maxCount);
+        newBuffer = s->sso_buffer;
+    }
+    else {
+        delete s->heap_buffer; 
+        s->length = maxCount + 1;
+        s->capacity = maxCount + 1; // +1 for null terminator
+        newBuffer = new char[s->capacity];
+		memset(newBuffer, 0, s->capacity); // Initialize the new buffer
+		memcpy(newBuffer, cString, maxCount);
+        s->heap_buffer = newBuffer;
+	}
+}
+
+bool isCAStringEqual(const CAString* s1, const char* cString) {
+	if (!s1 || !cString) return false;
+	if (s1->length <= 0) return false;
+
+	const int maxCount = strnlen_s(cString, 1024 * 1024);
+    if (is_probably_SSO_string(s1->sso_buffer)) {
+        return strncmp(s1->sso_buffer, cString, maxCount) == 0;
+    }
+    else if (IsPointerValid(s1->heap_buffer)) {
+        return strncmp(s1->heap_buffer, cString, maxCount) == 0;
+	}
+    return false;
+}
+
 static bool runOnce = false;
 static void* get_static_config()
 {
@@ -594,10 +631,57 @@ static void* __fastcall VFS_resolve_path_entry_patch(void* path)
     //    std::cout << "[SNED] VFS_resolve_path_entry called with path: " << res << std::endl;
     //}
     //else {
-    get_static_config();
-	CAString* str = (CAString*)res;
-	const char* cString = viewCAString(str);
-    std::cout << "[SNED] STRUCT VFS_resolve_path_entry called with path: " << cString << std::endl;
+    //get_static_config();
+	//CAString* str = (CAString*)res;
+	////const char* cString = viewCAString(str);
+ //   //std::cout << "[SNED] STRUCT VFS_resolve_path_entry called with path: " << cString << std::endl;
+	//const bool isStringWhatWeExpected = isCAStringEqual(str, "ui\\units\\icons\\wh_dlc07_brt_blessed_field_trebuchet.png");
+ //   if (isStringWhatWeExpected) {
+	//	replaceCAString(str, "D:\\SteamLibrary\\steamapps\\common\\Total War WARHAMMER III\\ui\\units\\icons\\wh_dlc07_brt_blessed_field_trebuchet.png");
+ //       const char* cString = viewCAString(str);
+ //       std::cout << "[SNED] STRUCT VFS_resolve_path_entry called with and replaced!: " << cString << std::endl;
+
+ //   }
+    
+    return res;
+}
+
+static bool  VFS_read_into_memory_patch_WWISE_ONLY(void* thisVFSptr, FileName* fileName, size_t* length, void* data)
+{
+    //PrintCAString(*fileName);
+    bool res = g_ca_read_into_memory(thisVFSptr, fileName, length, data);
+    //if (is_probably_string((char*)fileName)) {
+    //    std::cout << "[SNED] VFS_read_into_memory called with path: " << fileName << std::endl;
+    //}
+    //else {
+    CAString* str = *(CAString**)fileName;
+    const char* cString = viewCAString(str);
+    std::cout << "[SNED] STRUCT VFS_read_into_memory called with path: " << cString << std::endl;
+    const bool isStringWhatWeExpected = isCAStringEqual(str, "ui\\units\\icons\\wh_dlc07_brt_blessed_field_trebuchet.png");
+    if (isStringWhatWeExpected) {
+        replaceCAString(str, "D:\\SteamLibrary\\steamapps\\common\\Total War WARHAMMER III\\ui\\units\\icons\\wh_dlc07_brt_blessed_field_trebuchet.png");
+        const char* cString = viewCAString(str);
+        std::cout << "[SNED] STRUCT VFS_read_into_memory called with and replaced!: " << cString << std::endl;
+    }
+    
+    return res;
+}
+
+
+//NOTE: STORE THE RESULT POINTER SO WE CAN COMPARE IT LATER WHEN IT TRIES TO ACCESS THE ACTUAL FILE
+static VFS_FILE_PTR* VFS_get_file_entry_patch(void* thisVFSptr, VFS_FILE_PTR* vfsFilePtr, FileName* fileName, VFS_FILE_RANGE fileRange, int vrmId)
+{
+    VFS_FILE_PTR* res = g_ca_get_file_entry(thisVFSptr, vfsFilePtr, fileName, fileRange, vrmId);
+
+    CAString* str = *(CAString**)fileName;
+    const char* cString = viewCAString(str);
+    std::cout << "[SNED] STRUCT VFS_get_file_entry called with path: " << cString << std::endl;
+    const bool isStringWhatWeExpected = isCAStringEqual(str, "ui\\units\\icons\\wh_dlc07_brt_blessed_field_trebuchet.png");
+    if (isStringWhatWeExpected) {
+        replaceCAString(str, "D:\\SteamLibrary\\steamapps\\common\\Total War WARHAMMER III\\ui\\units\\icons\\wh_dlc07_brt_blessed_field_trebuchet.png");
+        const char* cString = viewCAString(str);
+        std::cout << "[SNED] STRUCT VFS_get_file_entry called with and replaced!: " << cString << std::endl;
+    }
     
     return res;
 }
@@ -738,6 +822,26 @@ bool SetupLoader()
         g_ca_logging = (CA_LOGGING)ca_logging;
     }
 
+ //   void* ca_read_into_memory = FindMemoryByPattern("40 57 41 56 41 57 48 83 ec 60 80 3d 07 27 01 04 00 4d 8b f9 4d 8b f0 48 8b fa 75 0c 32 c0 48 83 c4 60 41 5f 41 5e 5f c3 48 89 9c 24 80 00 00 00 48 89 ac 24 88 00 00 00");
+ //   if( !ca_read_into_memory)
+ //   {
+ //       printf("failed to acquire position of ca_read_into_memory.");
+ //   }
+ //   else
+ //   {
+ //       g_ca_read_into_memory = (VFS_READ_INTO_MEMORY)ca_read_into_memory;
+	//}
+
+    void* ca_get_file_entry = FindMemoryByPattern("48 89 5c 24 08 48 89 74 24 10 48 89 7c 24 18 55 41 56 41 57 48 8d 6c 24 c1 48 81 ec 90 00 00 00 33 ff 4d 8b f9");
+    if(!ca_get_file_entry)
+    {
+        printf("failed to acquire position of ca_get_file_entry.");
+    }
+    else
+    {
+        g_ca_get_file_entry = (VFS_GET_FILE_ENTRY)ca_get_file_entry;
+	}
+
 
     HMODULE hKernel32 = GetModuleHandleA("kernel32.dll");
     if (!hKernel32) {
@@ -793,6 +897,16 @@ bool SetupLoader()
         std::cerr << "Failed to create g_ca_logging hook." << std::endl;
         return false;
     }
+
+    if (DetourAttach(&(PVOID&)g_ca_get_file_entry, VFS_get_file_entry_patch) != NO_ERROR) {
+        std::cerr << "Failed to create g_ca_get_file_entry hook." << std::endl;
+        return false;
+    }
+
+ //   if (DetourAttach(&(PVOID&)g_ca_read_into_memory, VFS_read_into_memory_patch_WWISE_ONLY) != NO_ERROR) {
+ //       std::cerr << "Failed to create VFS_read_into_memory_patch hook." << std::endl;
+ //       return false;
+	//}
 
     if (DetourTransactionCommit() != NO_ERROR)
     {
